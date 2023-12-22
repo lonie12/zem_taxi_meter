@@ -262,38 +262,38 @@ class _KokomSenderState extends State<KokomSender> {
               //   ),
               //   padding: const EdgeInsets.all(10),
               // )
-              // Container(
-              //     width: Get.width,
-              //     padding: const EdgeInsets.all(12),
-              //     child: ElevatedButton(
-              //       style: ButtonStyle(
-              //         backgroundColor: MaterialStateProperty.resolveWith(
-              //             (states) => Helper.primary),
-              //         padding: MaterialStateProperty.all(
-              //           const EdgeInsets.symmetric(vertical: 11),
-              //         ),
-              //       ),
-              //       child: Text(
-              //         !courseStarted
-              //             ? "Commencer la course"
-              //             : "Terminer la course",
-              //         style: Theme.of(context)
-              //             .textTheme
-              //             .bodyLarge!
-              //             .copyWith(color: Colors.white, fontSize: 16),
-              //       ),
-              //       onPressed: () {
-              //         courseStarted ? endCourse() : startCourse();
-              //       },
-              //       //   // onPressed: () => customStartAdvertising(),
-              //       //   child: Text(!courseStarted ? "Commencer" : "Terminer"),
-              //     )
-              //     // ElevatedButton(
-              //     //   onPressed: () => courseStarted ? endCourse() : startCourse(),
-              //     //   // onPressed: () => customStartAdvertising(),
-              //     //   child: Text(!courseStarted ? "Commencer" : "Terminer"),
-              //     // ),
-              //     )
+              Container(
+                  width: Get.width,
+                  padding: const EdgeInsets.all(12),
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.resolveWith(
+                          (states) => Helper.primary),
+                      padding: MaterialStateProperty.all(
+                        const EdgeInsets.symmetric(vertical: 11),
+                      ),
+                    ),
+                    child: Text(
+                      !courseStarted
+                          ? "Commencer la course !"
+                          : "Terminer la course !",
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge!
+                          .copyWith(color: Colors.white, fontSize: 16),
+                    ),
+                    onPressed: () {
+                      courseStarted ? endCourse() : startCourse();
+                    },
+                    //   // onPressed: () => customStartAdvertising(),
+                    //   child: Text(!courseStarted ? "Commencer" : "Terminer"),
+                  )
+                  // ElevatedButton(
+                  //   onPressed: () => courseStarted ? endCourse() : startCourse(),
+                  //   // onPressed: () => customStartAdvertising(),
+                  //   child: Text(!courseStarted ? "Commencer" : "Terminer"),
+                  // ),
+                  )
             ],
           ),
         ),
