@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import 'ept.dart';
+import 'package:kokom/onboarding.dart';
+import 'package:kokom/theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
   runApp(const MainApp());
 }
 
@@ -13,8 +14,9 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const GetMaterialApp(
-      home: Body(),
+    return GetMaterialApp(
+      theme: appTheme,
+      home: const OnBoarding(),
       debugShowCheckedModeBanner: false,
     );
   }

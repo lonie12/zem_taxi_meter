@@ -65,51 +65,53 @@ class _DefinePriceState extends State<DefinePrice> {
               ),
             ),
             Expanded(
-                child: Container(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  //      const SizedBox(height: 10),
-                  // Container(
-                  //   alignment: Alignment.centerLeft,
-                  //   padding: const EdgeInsets.symmetric(horizontal: 12),
-                  //   child: Text(
-                  //     "Tarifs",
-                  //     style: TextStyle(
-                  //       fontSize: 18,
-                  //       fontWeight: FontWeight.bold,
-                  //       color: Helper.textColor,
-                  //     ),
-                  //     textAlign: TextAlign.start,
-                  //   ),
-                  // ),
+                child: SingleChildScrollView(
+              child: Container(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    //      const SizedBox(height: 10),
+                    // Container(
+                    //   alignment: Alignment.centerLeft,
+                    //   padding: const EdgeInsets.symmetric(horizontal: 12),
+                    //   child: Text(
+                    //     "Tarifs",
+                    //     style: TextStyle(
+                    //       fontSize: 18,
+                    //       fontWeight: FontWeight.bold,
+                    //       color: Helper.textColor,
+                    //     ),
+                    //     textAlign: TextAlign.start,
+                    //   ),
+                    // ),
 
-                  const SizedBox(height: 20),
-                  Text(
-                    "Tarif de base",
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .copyWith(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 5),
-                  Textarea("Entre votre tarif de base", "title",
-                      basePriceController),
-                  const SizedBox(height: 20),
-                  Text(
-                    "Prix par km",
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .copyWith(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 5),
-                  Textarea("Entrer le prix par kilomètre", "title",
-                      kmPriceController),
-                  const SizedBox(height: 20),
-                  const SizedBox(height: 20),
-                ],
+                    const SizedBox(height: 20),
+                    Text(
+                      "Tarif de base",
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge!
+                          .copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 5),
+                    Textarea("Entre votre tarif de base", "title",
+                        basePriceController),
+                    const SizedBox(height: 20),
+                    Text(
+                      "Prix par km",
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge!
+                          .copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 5),
+                    Textarea("Entrer le prix par kilomètre", "title",
+                        kmPriceController),
+                    const SizedBox(height: 20),
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
             )),
             Container(
