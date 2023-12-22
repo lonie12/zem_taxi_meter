@@ -1,9 +1,11 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:kokom/app/widgets/mybutton.dart';
+import 'package:kokom/helper/helper.dart';
 import 'package:kokom/utils.dart';
 import 'package:nearby_connections/nearby_connections.dart';
-import 'package:wakelock_plus/wakelock_plus.dart';
+// import 'package:wakelock_plus/wakelock_plus.dart';
 
 class KokomReceiver extends StatefulWidget {
   const KokomReceiver({super.key});
@@ -21,7 +23,7 @@ class _KokomReceiverState extends State<KokomReceiver> {
 
   @override
   void initState() {
-    WakelockPlus.enable();
+    // WakelockPlus.enable();
     super.initState();
   }
 
@@ -92,12 +94,15 @@ class _KokomReceiverState extends State<KokomReceiver> {
             ),
             Container(
               padding: const EdgeInsets.all(12),
-              child: ElevatedButton(
-                onPressed: () async {
+              child: MyButton(
+                title: "Connecter",
+                color: Helper.blue,
+                size: 32.0,
+                width: 200.0,
+                onClick: () async {
                   await Nearby().stopDiscovery();
                   customStartDiscovery();
                 },
-                child: const Text("Connecter"),
               ),
             )
           ],
