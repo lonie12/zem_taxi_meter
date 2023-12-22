@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kokom/app/pages/home/index.dart';
-import 'package:get/get.dart';
+
 import 'ept.dart';
 
 void main() {
@@ -13,9 +12,8 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const GetMaterialApp(
-      home: HomeIndex(),
-      debugShowCheckedModeBanner: false,
+    return const MaterialApp(
+      home: Body(),
     );
   }
 }
