@@ -153,7 +153,7 @@ class _OnBoardingState extends State<OnBoarding> {
         goToNexPage();
         break;
       case 1:
-        if ((await Future.wait([
+        if (!(await Future.wait([
           Permission.bluetooth.isGranted,
           Permission.bluetoothAdvertise.isGranted,
           Permission.bluetoothConnect.isGranted,
