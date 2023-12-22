@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:kokom/app/widgets/appbar.dart';
 import 'package:kokom/app/widgets/input.dart';
@@ -34,12 +33,10 @@ class _DefinePriceState extends State<DefinePrice> {
     storage.setItem('my_data', data);
   }
 
-  // Load data from local storage
   void _loadData() {
     final dynamic savedData = storage.getItem('my_data');
     if (savedData != null) {
       setState(() {
-        // Set the controllers with the loaded data
         basePriceController.text = savedData['basePrice'].toString();
         kmPriceController.text = savedData['kmPrice'].toString();
       });
@@ -48,7 +45,7 @@ class _DefinePriceState extends State<DefinePrice> {
 
   @override
   Widget build(BuildContext context) {
-  
+    print(basePriceController.text);
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -132,8 +129,7 @@ class _DefinePriceState extends State<DefinePrice> {
                       colorText: Colors.white,
                     );
                   } else {
-                    final int basePrice =
-                        int.parse(basePriceController.text);
+                    final int basePrice = int.parse(basePriceController.text);
                     final int kmPrice = int.parse(kmPriceController.text);
                     _saveData();
                     Get.to(KokomSender(
