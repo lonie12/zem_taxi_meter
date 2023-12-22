@@ -3,6 +3,8 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:kokom/app/widgets/mybutton.dart';
+import 'package:kokom/helper/helper.dart';
 import 'package:kokom/utils.dart';
 import 'package:location/location.dart';
 import 'package:nearby_connections/nearby_connections.dart';
@@ -181,10 +183,12 @@ class _KokomSenderState extends State<KokomSender> {
             ),
             Container(
               padding: const EdgeInsets.all(12),
-              child: ElevatedButton(
-                onPressed: () => courseStarted ? endCourse() : startCourse(),
-                // onPressed: () => customStartAdvertising(),
-                child: Text(!courseStarted ? "Commencer" : "Terminer"),
+              child: MyButton(
+                title: !courseStarted ? "Commencer" : "Terminer",
+                color: Helper.primary,
+                size: 32.0,
+                width: 200.0,
+                onClick: () => courseStarted ? endCourse() : startCourse(),
               ),
             )
           ],

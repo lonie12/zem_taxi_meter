@@ -20,7 +20,7 @@ class Helper {
   ];
   // static Color primary = Color(0XFF1929FF);
   static Color primary = const Color(0XFF24292E);
-  static Color blue = const Color(0XFF043AFE);
+  static Color blue = const Color(0XFFFFB534);
   // static Color primary = Color(0xFFD23F57);
   static Color otherPrimaryColor = const Color(0xFF1C38FF);
   static Color secondary = const Color(0xFFDF2218);
