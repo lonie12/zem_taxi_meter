@@ -1,10 +1,16 @@
+import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:get/get.dart';
+import 'package:kokom/receiver.dart';
+import 'package:kokom/sender.dart';
+import 'package:location/location.dart' as loc;
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nearby_connections/nearby_connections.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 void main() => runApp(const MyApp());
 
@@ -40,9 +46,34 @@ class _MyBodyState extends State<Body> {
   final String userName = Random().nextInt(10000).toString();
   final Strategy strategy = Strategy.P2P_STAR;
   Map<String, ConnectionInfo> endpointMap = {};
+  var streamConnected = false;
 
   String? tempFileUri; //reference to the file currently being transferred
   Map<int, String> map = {}; //store filename mapped to corresponding payloadId
+  final loc.Location location = loc.Location();
+  StreamSubscription<loc.LocationData>? locationSubscription;
+
+  @override
+  void initState() {
+    onInit();
+    super.initState();
+  }
+
+  Future<void> onInit() async {
+    WakelockPlus.enable();
+    location.changeSettings(
+      interval: 1000,
+      accuracy: loc.LocationAccuracy.high,
+    );
+  }
+
+  Future<void> listenLocation() async {
+    locationSubscription = location.onLocationChanged.handleError((onError) {
+      locationSubscription?.cancel();
+    }).listen((loc.LocationData currentlocation) async {
+      // await locationChange();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -189,18 +220,23 @@ class _MyBodyState extends State<Body> {
         ),
       ),
       bottomNavigationBar: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12),
-        child: Column(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Row(
           children: [
-            ElevatedButton(
-              onPressed: () => customStart(),
-              child: Text("Commencer"),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () => Get.to(() => const KokomSender()),
+                // onPressed: () => customStartAdvertising(),
+                child: const Text("Commencer"),
+              ),
             ),
-            SizedBox(height: 12),
-            
-            ElevatedButton(
-              onPressed: () {},
-              child: Text("Suivre"),
+            const SizedBox(width: 20),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () => Get.to(() => const KokomReceiver()),
+                // onPressed: () => customStartDiscovery(),
+                child: const Text("Suivre"),
+              ),
             ),
           ],
         ),
@@ -208,13 +244,14 @@ class _MyBodyState extends State<Body> {
     );
   }
 
-  void customStart() async {
+  void customStartAdvertising() async {
     try {
       bool a = await Nearby().startAdvertising(
         userName,
         strategy,
         onConnectionInitiated: onConnectionInit,
         onConnectionResult: (id, status) {
+          streamConnected = true;
           showSnackbar(status);
         },
         onDisconnected: (id) {
@@ -228,6 +265,48 @@ class _MyBodyState extends State<Body> {
       showSnackbar("ADVERTISING: $a");
     } catch (exception) {
       showSnackbar(exception);
+    }
+  }
+
+  void customStartDiscovery() async {
+    try {
+      bool a = await Nearby().startDiscovery(
+        userName,
+        strategy,
+        onEndpointFound: (id, name, serviceId) {
+          // show sheet automatically to request connection
+          print("Founded ===========");
+          Future.delayed(const Duration(seconds: 3), () {
+            Nearby().requestConnection(
+              userName,
+              id,
+              onConnectionInitiated: (id, info) {
+                onConnectionInit(id, info);
+              },
+              onConnectionResult: (id, status) {
+                streamConnected = true;
+                showSnackbar(status);
+              },
+              onDisconnected: (id) {
+                setState(() {
+                  endpointMap.remove(id);
+                });
+                showSnackbar(
+                  "Disconnected from: ${endpointMap[id]!.endpointName}, id $id",
+                );
+              },
+            );
+          });
+        },
+        onEndpointLost: (id) {
+          showSnackbar(
+            "Lost discovered Endpoint: ${endpointMap[id]?.endpointName}, id $id",
+          );
+        },
+      );
+      showSnackbar("DISCOVERING: $a");
+    } catch (e) {
+      showSnackbar(e);
     }
   }
 
@@ -249,92 +328,57 @@ class _MyBodyState extends State<Body> {
   /// Called upon Connection request (on both devices)
   /// Both need to accept connection to start sending/receiving
   void onConnectionInit(String id, ConnectionInfo info) {
-    showModalBottomSheet(
-      context: context,
-      builder: (builder) {
-        return Center(
-          child: Column(
-            children: <Widget>[
-              Text("id: $id"),
-              Text("Token: ${info.authenticationToken}"),
-              Text("Name${info.endpointName}"),
-              Text("Incoming: ${info.isIncomingConnection}"),
-              ElevatedButton(
-                child: const Text("Accept Connection"),
-                onPressed: () {
-                  Navigator.pop(context);
-                  setState(() {
-                    endpointMap[id] = info;
-                  });
-                  Nearby().acceptConnection(
-                    id,
-                    onPayLoadRecieved: (endid, payload) async {
-                      if (payload.type == PayloadType.BYTES) {
-                        String str = String.fromCharCodes(payload.bytes!);
-                        showSnackbar("$endid: $str");
+    setState(() {
+      endpointMap[id] = info;
+    });
+    Nearby().acceptConnection(
+      id,
+      onPayLoadRecieved: (endid, payload) async {
+        if (payload.type == PayloadType.BYTES) {
+          String str = String.fromCharCodes(payload.bytes!);
+          showSnackbar("$endid: $str");
 
-                        if (str.contains(':')) {
-                          // used for file payload as file payload is mapped as
-                          // payloadId:filename
-                          int payloadId = int.parse(str.split(':')[0]);
-                          String fileName = (str.split(':')[1]);
+          // if (str.contains(':')) {
+          //   // used for file payload as file payload is mapped as
+          //   // payloadId:filename
+          //   int payloadId = int.parse(str.split(':')[0]);
+          //   String fileName = (str.split(':')[1]);
 
-                          if (map.containsKey(payloadId)) {
-                            if (tempFileUri != null) {
-                              moveFile(tempFileUri!, fileName);
-                            } else {
-                              showSnackbar("File doesn't exist");
-                            }
-                          } else {
-                            //add to map if not already
-                            map[payloadId] = fileName;
-                          }
-                        }
-                      } else if (payload.type == PayloadType.FILE) {
-                        showSnackbar("$endid: File transfer started");
-                        tempFileUri = payload.uri;
-                      }
-                    },
-                    onPayloadTransferUpdate: (endid, payloadTransferUpdate) {
-                      if (payloadTransferUpdate.status ==
-                          PayloadStatus.IN_PROGRESS) {
-                        print(payloadTransferUpdate.bytesTransferred);
-                      } else if (payloadTransferUpdate.status ==
-                          PayloadStatus.FAILURE) {
-                        print("failed");
-                        showSnackbar("$endid: FAILED to transfer file");
-                      } else if (payloadTransferUpdate.status ==
-                          PayloadStatus.SUCCESS) {
-                        showSnackbar(
-                            "$endid success, total bytes = ${payloadTransferUpdate.totalBytes}");
+          //   if (map.containsKey(payloadId)) {
+          //     if (tempFileUri != null) {
+          //       moveFile(tempFileUri!, fileName);
+          //     } else {
+          //       showSnackbar("File doesn't exist");
+          //     }
+          //   } else {
+          //     //add to map if not already
+          //     map[payloadId] = fileName;
+          //   }
+          // }
+        } else if (payload.type == PayloadType.FILE) {
+          showSnackbar("$endid: File transfer started");
+          tempFileUri = payload.uri;
+        }
+      },
+      onPayloadTransferUpdate: (endid, payloadTransferUpdate) {
+        if (payloadTransferUpdate.status == PayloadStatus.IN_PROGRESS) {
+          print(payloadTransferUpdate.bytesTransferred);
+        } else if (payloadTransferUpdate.status == PayloadStatus.FAILURE) {
+          print("failed");
+          showSnackbar("$endid: FAILED to transfer file");
+        } else if (payloadTransferUpdate.status == PayloadStatus.SUCCESS) {
+          showSnackbar(
+              "$endid success, total bytes = ${payloadTransferUpdate.totalBytes}");
 
-                        if (map.containsKey(payloadTransferUpdate.id)) {
-                          //rename the file now
-                          String name = map[payloadTransferUpdate.id]!;
-                          moveFile(tempFileUri!, name);
-                        } else {
-                          //bytes not received till yet
-                          map[payloadTransferUpdate.id] = "";
-                        }
-                      }
-                    },
-                  );
-                },
-              ),
-              ElevatedButton(
-                child: const Text("Reject Connection"),
-                onPressed: () async {
-                  Navigator.pop(context);
-                  try {
-                    await Nearby().rejectConnection(id);
-                  } catch (e) {
-                    showSnackbar(e);
-                  }
-                },
-              ),
-            ],
-          ),
-        );
+          if (map.containsKey(payloadTransferUpdate.id)) {
+            //rename the file now
+            String name = map[payloadTransferUpdate.id]!;
+            moveFile(tempFileUri!, name);
+          } else {
+            //bytes not received till yet
+            map[payloadTransferUpdate.id] = "";
+          }
+        }
       },
     );
   }
