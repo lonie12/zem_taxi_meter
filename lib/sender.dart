@@ -253,15 +253,15 @@ class _KokomSenderState extends State<KokomSender> {
                   ),
                 ),
               ),
-              Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  border: Border.all(width: 100, color: Helper.primary),
-                  borderRa
-                ),
-                padding: const EdgeInsets.all(10),
-              )
+              // Container(
+              //   width: 120,
+              //   height: 120,
+              //   decoration: BoxDecoration(
+              //     border: Border.all(width: 100, color: Helper.primary),
+              //     borderRa
+              //   ),
+              //   padding: const EdgeInsets.all(10),
+              // )
               // Container(
               //     width: Get.width,
               //     padding: const EdgeInsets.all(12),
