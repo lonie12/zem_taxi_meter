@@ -1,10 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:kokom/app/widgets/mybutton.dart';
-import 'package:kokom/helper/helper.dart';
+import 'package:kokom/utils.dart';
 import 'package:nearby_connections/nearby_connections.dart';
-// import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 class KokomReceiver extends StatefulWidget {
   const KokomReceiver({super.key});
@@ -18,13 +17,14 @@ class _KokomReceiverState extends State<KokomReceiver> {
   final Strategy strategy = Strategy.P2P_STAR;
   Map<String, ConnectionInfo> endpointMap = {};
   var streamConnected = false;
-  var streamData = ["0", "0"];
+  var streamData = ["", ""];
 
   @override
   void initState() {
-    // WakelockPlus.enable();
+    WakelockPlus.enable();
     super.initState();
   }
+  
 
   @override
   Widget build(context) {
@@ -67,7 +67,7 @@ class _KokomReceiverState extends State<KokomReceiver> {
                           ),
                           child: Center(
                             child: Text(
-                              streamData[0],
+                              "$streamData[0]",
                               style: const TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
@@ -78,7 +78,7 @@ class _KokomReceiverState extends State<KokomReceiver> {
                         ),
                         const SizedBox(height: 15),
                         Text(
-                          "Distance parcourure:  ${streamData[1]}km",
+                          "Distance parcourure: $streamData[1] km",
                           style: const TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.bold,
@@ -93,15 +93,9 @@ class _KokomReceiverState extends State<KokomReceiver> {
             ),
             Container(
               padding: const EdgeInsets.all(12),
-              child: MyButton(
-                title: "Connecter",
-                color: Helper.blue,
-                size: 32.0,
-                width: 200.0,
-                onClick: () async {
-                  await Nearby().stopDiscovery();
-                  customStartDiscovery();
-                },
+              child: ElevatedButton(
+                onPressed: () => customStartDiscovery(),
+                child: const Text("Connecter"),
               ),
             )
           ],
