@@ -11,8 +11,10 @@ import 'package:nearby_connections/nearby_connections.dart';
 // import 'package:wakelock_plus/wakelock_plus.dart';
 
 class KokomSender extends StatefulWidget {
-  const KokomSender({super.key});
-
+  const KokomSender(
+      {super.key, required this.baseprice, required this.kmprice});
+  final int baseprice;
+  final int kmprice;
   @override
   State<KokomSender> createState() => _KokomSenderState();
 }

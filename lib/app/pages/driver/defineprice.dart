@@ -1,17 +1,54 @@
-import 'package:carbon_icons/carbon_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:kokom/app/widgets/appbar.dart';
 import 'package:kokom/app/widgets/input.dart';
 import 'package:kokom/app/widgets/mybutton.dart';
 import 'package:kokom/helper/helper.dart';
 import 'package:kokom/sender.dart';
+import 'package:localstorage/localstorage.dart';
 
-class DefinePrice extends StatelessWidget {
+class DefinePrice extends StatefulWidget {
   const DefinePrice({super.key});
 
   @override
+  State<DefinePrice> createState() => _DefinePriceState();
+}
+
+class _DefinePriceState extends State<DefinePrice> {
+  final TextEditingController basePriceController = TextEditingController();
+
+  final TextEditingController kmPriceController = TextEditingController();
+  final LocalStorage storage = LocalStorage('my_data');
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  void _saveData() {
+    final Map<String, dynamic> data = {
+      'basePrice': int.parse(basePriceController.text),
+      'kmPrice': int.parse(kmPriceController.text),
+    };
+    storage.setItem('my_data', data);
+  }
+
+  // Load data from local storage
+  void _loadData() {
+    final dynamic savedData = storage.getItem('my_data');
+    if (savedData != null) {
+      setState(() {
+        // Set the controllers with the loaded data
+        basePriceController.text = savedData['basePrice'].toString();
+        kmPriceController.text = savedData['kmPrice'].toString();
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+  
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -61,7 +98,7 @@ class DefinePrice extends StatelessWidget {
                   ),
                   const SizedBox(height: 5),
                   Textarea("Entre votre tarif de base", "title",
-                      TextEditingController()),
+                      basePriceController),
                   const SizedBox(height: 20),
                   Text(
                     "Prix par km",
@@ -72,7 +109,7 @@ class DefinePrice extends StatelessWidget {
                   ),
                   const SizedBox(height: 5),
                   Textarea("Entrer le prix par kilomètre", "title",
-                      TextEditingController()),
+                      kmPriceController),
                   const SizedBox(height: 20),
                   const SizedBox(height: 20),
                 ],
@@ -85,7 +122,27 @@ class DefinePrice extends StatelessWidget {
                 color: Helper.primary,
                 size: 32.0,
                 width: 200.0,
-                onClick: () => Get.to(const KokomSender()),
+                onClick: () {
+                  if (basePriceController.text.isEmpty ||
+                      kmPriceController.text.isEmpty) {
+                    Get.snackbar(
+                      'Error',
+                      'Veillez définir vos tarifs',
+                      backgroundColor: Colors.red,
+                      colorText: Colors.white,
+                    );
+                  } else {
+                    final int basePrice =
+                        int.parse(basePriceController.text);
+                    final int kmPrice = int.parse(kmPriceController.text);
+                    _saveData();
+                    Get.to(KokomSender(
+                      baseprice: basePrice,
+                      kmprice: kmPrice,
+                    ));
+                  }
+                  //
+                },
               ),
             ),
           ],

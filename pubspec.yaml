@@ -22,6 +22,7 @@ dependencies:
   lottie: ^2.7.0
   shared_preferences: ^2.2.2
   carbon_icons: ^0.0.1+2
+  localstorage: ^4.0.1+4
 
 dev_dependencies:
   flutter_test:
