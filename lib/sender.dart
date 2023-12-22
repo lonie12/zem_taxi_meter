@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart' as Geo;
 import 'package:get/get.dart';
+import 'package:kokom/helper/helper.dart';
 import 'package:kokom/utils.dart';
 import 'package:location/location.dart';
 import 'package:nearby_connections/nearby_connections.dart';
@@ -155,18 +156,6 @@ class _KokomSenderState extends State<KokomSender> {
     });
   }
 
-  // Future<dynamic> hasCourse() async {
-  //   const basePrice = 50;
-  //   const rideExist = true;
-  //   const lastRideBalance = 0.0;
-  //   if (rideExist) {
-  //     var totalDistance = calculateDistance(0, 0, 0, 0).round();
-  //     var newPrice = totalDistance * basePrice;
-  //     // rideBalance = newPrice;
-  //     customStartAdvertising();
-  //   }
-  // }
-
   @override
   Widget build(context) {
     return WillPopScope(
@@ -177,6 +166,26 @@ class _KokomSenderState extends State<KokomSender> {
         body: SafeArea(
           child: Column(
             children: [
+              Align(
+                alignment: Alignment.centerRight,
+                child: InkWell(
+                  onTap: () async {
+                    await endCourse();
+                    Get.back();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 12),
+                    child: Text(
+                      "Quitter",
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          fontSize: 16,
+                          color: Helper.danger,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ),
               Expanded(
                 child: Center(
                   child: Column(
@@ -184,74 +193,98 @@ class _KokomSenderState extends State<KokomSender> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Container(
-                        width: 100,
-                        height: 100,
+                        width: 150,
+                        height: 150,
                         decoration: BoxDecoration(
-                          border: Border.all(width: 1),
+                          border: Border.all(width: 5, color: Helper.warning),
                           borderRadius: BorderRadius.circular(100),
+                          color: Colors.grey.shade300,
                         ),
                         child: Center(
-                          child: Text(
-                            "$rideBalance",
-                            style: const TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF24292E),
-                            ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                "$rideBalance",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color(0xFF24292E),
+                                    ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                "FCFA",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(
+                                      fontSize: 15,
+                                      color: const Color(0xFF24292E)
+                                          .withOpacity(0.8),
+                                    ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
                       const SizedBox(height: 15),
                       Text(
-                        "Distance parcourure: $rideDistance km",
-                        style: const TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF24292E),
-                        ),
+                        "Distance parcourure",
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFF24292E),
+                            ),
+                      ),
+                      Text(
+                        "$rideDistance km",
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFF24292E),
+                            ),
                       )
                     ],
                   ),
                 ),
               ),
               Container(
-                padding: const EdgeInsets.all(12),
-                child: ElevatedButton(
-                  // onPressed: () {
-                  //   showModalBottomSheet(
-                  //     context: context,
-                  //     builder: (context) {
-                  //       return Container(
-                  //         padding: const EdgeInsets.all(12),
-                  //         width: Get.width,
-                  //         decoration: const BoxDecoration(color: Colors.white),
-                  //         child: Row(
-                  //           crossAxisAlignment: CrossAxisAlignment.center,
-                  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //           children: [
-                  //             const Text(
-                  //               "Demande de connexion",
-                  //               style: TextStyle(
-                  //                 fontSize: 18,
-                  //                 color: Color(0xFF24292E),
-                  //                 fontFamily: "Poppins",
-                  //               ),
-                  //             ),
-                  //             ElevatedButton(
-                  //               onPressed: () async {},
-                  //               child: const Text("Accepter"),
-                  //             )
-                  //           ],
-                  //         ),
-                  //       );
-                  //     },
-                  //   );
-                  // },
-                  onPressed: () => courseStarted ? endCourse() : startCourse(),
-                  // onPressed: () => customStartAdvertising(),
-                  child: Text(!courseStarted ? "Commencer" : "Terminer"),
-                ),
-              )
+                  width: Get.width,
+                  padding: const EdgeInsets.all(12),
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.resolveWith(
+                          (states) => Helper.primary),
+                      padding: MaterialStateProperty.all(
+                        const EdgeInsets.symmetric(vertical: 11),
+                      ),
+                    ),
+                    child: Text(
+                      !courseStarted
+                          ? "Commencer la course"
+                          : "Terminer la course",
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge!
+                          .copyWith(color: Colors.white, fontSize: 16),
+                    ),
+                    onPressed: () {
+                      courseStarted ? endCourse() : startCourse();
+                    },
+                    //   // onPressed: () => customStartAdvertising(),
+                    //   child: Text(!courseStarted ? "Commencer" : "Terminer"),
+                  )
+                  // ElevatedButton(
+                  //   onPressed: () => courseStarted ? endCourse() : startCourse(),
+                  //   // onPressed: () => customStartAdvertising(),
+                  //   child: Text(!courseStarted ? "Commencer" : "Terminer"),
+                  // ),
+                  )
             ],
           ),
         ),
@@ -296,13 +329,21 @@ class _KokomSenderState extends State<KokomSender> {
       context: context,
       builder: (context) {
         return Container(
+          padding: const EdgeInsets.all(12),
           width: Get.width,
-          decoration:
-              BoxDecoration(color: const Color(0XFF24292E).withOpacity(0.5)),
+          decoration: const BoxDecoration(color: Colors.white),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Demande de connextion"),
+              const Text(
+                "Demande de connexion",
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Color(0xFF24292E),
+                  fontFamily: "Poppins",
+                ),
+              ),
               ElevatedButton(
                 onPressed: () async {
                   Nearby().acceptConnection(
