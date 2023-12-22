@@ -234,7 +234,7 @@ class _KokomSenderState extends State<KokomSender> {
                       ),
                       const SizedBox(height: 15),
                       Text(
-                        "Distance parcourure",
+                        "Distance parcourue",
                         style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
@@ -253,38 +253,47 @@ class _KokomSenderState extends State<KokomSender> {
                   ),
                 ),
               ),
-              Container(
-                  width: Get.width,
-                  padding: const EdgeInsets.all(12),
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.resolveWith(
-                          (states) => Helper.primary),
-                      padding: MaterialStateProperty.all(
-                        const EdgeInsets.symmetric(vertical: 11),
-                      ),
-                    ),
-                    child: Text(
-                      !courseStarted
-                          ? "Commencer la course"
-                          : "Terminer la course",
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge!
-                          .copyWith(color: Colors.white, fontSize: 16),
-                    ),
-                    onPressed: () {
-                      courseStarted ? endCourse() : startCourse();
-                    },
-                    //   // onPressed: () => customStartAdvertising(),
-                    //   child: Text(!courseStarted ? "Commencer" : "Terminer"),
-                  )
-                  // ElevatedButton(
-                  //   onPressed: () => courseStarted ? endCourse() : startCourse(),
-                  //   // onPressed: () => customStartAdvertising(),
-                  //   child: Text(!courseStarted ? "Commencer" : "Terminer"),
-                  // ),
-                  )
+              // Container(
+              //   width: 120,
+              //   height: 120,
+              //   decoration: BoxDecoration(
+              //     border: Border.all(width: 100, color: Helper.primary),
+              //     borderRa
+              //   ),
+              //   padding: const EdgeInsets.all(10),
+              // )
+              // Container(
+              //     width: Get.width,
+              //     padding: const EdgeInsets.all(12),
+              //     child: ElevatedButton(
+              //       style: ButtonStyle(
+              //         backgroundColor: MaterialStateProperty.resolveWith(
+              //             (states) => Helper.primary),
+              //         padding: MaterialStateProperty.all(
+              //           const EdgeInsets.symmetric(vertical: 11),
+              //         ),
+              //       ),
+              //       child: Text(
+              //         !courseStarted
+              //             ? "Commencer la course"
+              //             : "Terminer la course",
+              //         style: Theme.of(context)
+              //             .textTheme
+              //             .bodyLarge!
+              //             .copyWith(color: Colors.white, fontSize: 16),
+              //       ),
+              //       onPressed: () {
+              //         courseStarted ? endCourse() : startCourse();
+              //       },
+              //       //   // onPressed: () => customStartAdvertising(),
+              //       //   child: Text(!courseStarted ? "Commencer" : "Terminer"),
+              //     )
+              //     // ElevatedButton(
+              //     //   onPressed: () => courseStarted ? endCourse() : startCourse(),
+              //     //   // onPressed: () => customStartAdvertising(),
+              //     //   child: Text(!courseStarted ? "Commencer" : "Terminer"),
+              //     // ),
+              //     )
             ],
           ),
         ),
