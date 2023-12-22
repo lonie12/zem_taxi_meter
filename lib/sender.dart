@@ -3,6 +3,8 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart' as Geo;
+import 'package:get/get.dart';
 import 'package:kokom/utils.dart';
 import 'package:location/location.dart';
 import 'package:nearby_connections/nearby_connections.dart';
@@ -25,6 +27,7 @@ class _KokomSenderState extends State<KokomSender> {
   var rideDistance = 0;
   var rideBalance = 0;
   var basePrice = 50;
+  List<double> originLocation = [0.0, 0.0];
 
   final String userName = Random().nextInt(10000).toString();
   final Strategy strategy = Strategy.P2P_STAR;
@@ -47,71 +50,96 @@ class _KokomSenderState extends State<KokomSender> {
 
   Future<void> begin() async {
     await location.changeSettings(
-      interval: 10000,
+      interval: 1000,
+      // distanceFilter: 1000,
       accuracy: LocationAccuracy.high,
     );
     await listenLocation();
   }
 
-  Future<dynamic> listenLocation() async {
-    locationSubscription = location.onLocationChanged.handleError((onError) {
-      locationSubscription?.cancel();
-    }).listen((LocationData currentlocation) async {
-      // debugPrint(currentlocation.toString());
-      rideDistance = rideDistance + 1;
-      var newBalance = basePrice * rideDistance;
-      rideBalance = newBalance;
-      setState(() {});
-      endpointMap.forEach((key, value) {
-        // String a = Random().nextInt(100).toString();
-        // showSnackbar("Sending $a to ${value.endpointName}, id: $key");
-        // rideDistance = rideDistance + 1;
-        // var newBalance = basePrice * rideDistance;
-        // rideBalance = newBalance;
-        // setState(() {});
-        Nearby().sendBytesPayload(
-          key,
-          Uint8List.fromList(
-            "$rideBalance|$rideDistance".codeUnits,
-          ),
-        );
-      });
-    });
-  }
-
   // Future<dynamic> listenLocation() async {
-  //   double lastDistance = 0;
-
   //   locationSubscription = location.onLocationChanged.handleError((onError) {
   //     locationSubscription?.cancel();
-  //   }).listen((LocationData currentLocation) async {
-  //     double distanceInMeters = await Geolocator.distanceBetween(
-  //       lastLocation.latitude,
-  //       lastLocation.longitude,
-  //       currentLocation.latitude,
-  //       currentLocation.longitude,
-  //     );
-
-  //     // Convertir la distance en kilomètres
-  //     double distanceInKm = distanceInMeters / 1000;
-
-  //     if (distanceInKm >= 1) {
-  //       // Mettre à jour la distance parcourue
-  //       rideDistance += distanceInKm;
-  //       lastLocation = currentLocation;
-
-  //       // Mettre à jour le solde et l'interface utilisateur
-  //       var newBalance = basePrice * rideDistance;
-  //       rideBalance = newBalance;
-  //       setState(() {});
-  //     }
+  //   }).listen((LocationData currentlocation) async {
+  //     // debugPrint(currentlocation.toString());
+  //     rideDistance = rideDistance + 1;
+  //     var newBalance = basePrice * rideDistance;
+  //     rideBalance = newBalance;
+  //     setState(() {});
+  //     endpointMap.forEach((key, value) {
+  //       // String a = Random().nextInt(100).toString();
+  //       // showSnackbar("Sending $a to ${value.endpointName}, id: $key");
+  //       // rideDistance = rideDistance + 1;
+  //       // var newBalance = basePrice * rideDistance;
+  //       // rideBalance = newBalance;
+  //       // setState(() {});
+  //       Nearby().sendBytesPayload(
+  //         key,
+  //         Uint8List.fromList(
+  //           "$rideBalance|$rideDistance".codeUnits,
+  //         ),
+  //       );
+  //     });
   //   });
   // }
 
+  Future<dynamic> listenLocation() async {
+    locationSubscription = location.onLocationChanged.handleError((onError) {
+      locationSubscription?.cancel();
+    }).listen((LocationData currentLocation) async {
+      var currentPosition = await Geo.Geolocator.getCurrentPosition();
+      // debugPrint(currentPosition.toString());
+      double distanceInMeters = Geo.Geolocator.distanceBetween(
+        originLocation[0],
+        originLocation[1],
+        currentPosition.latitude,
+        currentPosition.longitude,
+      );
+
+      // Convertir la distance en kilomètres
+      int distanceInKm = (distanceInMeters / 1000).round();
+
+      debugPrint("Distance en km :$distanceInKm");
+
+      if (distanceInKm >= 1) {
+        originLocation = [];
+        // Mettre à jour la distance parcourue
+        rideDistance += distanceInKm;
+        originLocation = [
+          currentPosition.latitude,
+          currentPosition.longitude,
+        ];
+
+        // Mettre à jour le solde et l'interface utilisateur
+        var newBalance = basePrice * rideDistance;
+        rideBalance = newBalance;
+        setState(() {});
+
+        endpointMap.forEach((key, value) {
+          // String a = Random().nextInt(100).toString();
+          // showSnackbar("Sending $a to ${value.endpointName}, id: $key");
+          // rideDistance = rideDistance + 1;
+          // var newBalance = basePrice * rideDistance;
+          // rideBalance = newBalance;
+          // setState(() {});
+          Nearby().sendBytesPayload(
+            key,
+            Uint8List.fromList(
+              "$rideBalance|$rideDistance".codeUnits,
+            ),
+          );
+        });
+      } else {}
+    });
+  }
+
   Future<void> startCourse() async {
+    var currentLocation = await Geo.Geolocator.getCurrentPosition();
+    originLocation = [];
+    originLocation = [currentLocation.latitude, currentLocation.longitude];
     // rideBalance = basePrice;
     await Nearby().stopAdvertising();
-    customStartAdvertising();
+    await customStartAdvertising();
     courseStarted = true;
     setState(() {});
     begin();
@@ -119,75 +147,111 @@ class _KokomSenderState extends State<KokomSender> {
 
   Future<void> endCourse() async {
     locationSubscription?.cancel();
+
     setState(() {
       locationSubscription = null;
     });
   }
 
-  Future<dynamic> hasCourse() async {
-    const basePrice = 50;
-    const rideExist = true;
-    const lastRideBalance = 0.0;
-    if (rideExist) {
-      var totalDistance = calculateDistance(0, 0, 0, 0).round();
-      var newPrice = totalDistance * basePrice;
-      // rideBalance = newPrice;
-      customStartAdvertising();
-    }
-  }
+  // Future<dynamic> hasCourse() async {
+  //   const basePrice = 50;
+  //   const rideExist = true;
+  //   const lastRideBalance = 0.0;
+  //   if (rideExist) {
+  //     var totalDistance = calculateDistance(0, 0, 0, 0).round();
+  //     var newPrice = totalDistance * basePrice;
+  //     // rideBalance = newPrice;
+  //     customStartAdvertising();
+  //   }
+  // }
 
   @override
   Widget build(context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 100,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        border: Border.all(width: 1),
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                      child: Center(
-                        child: Text(
-                          "$rideBalance",
-                          style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF24292E),
+    return WillPopScope(
+      onWillPop: () {
+        return Future.value(false);
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          border: Border.all(width: 1),
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "$rideBalance",
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF24292E),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 15),
-                    Text(
-                      "Distance parcourure: $rideDistance km",
-                      style: const TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF24292E),
-                      ),
-                    )
-                  ],
+                      const SizedBox(height: 15),
+                      Text(
+                        "Distance parcourure: $rideDistance km",
+                        style: const TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF24292E),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(12),
-              child: ElevatedButton(
-                onPressed: () => courseStarted ? endCourse() : startCourse(),
-                // onPressed: () => customStartAdvertising(),
-                child: Text(!courseStarted ? "Commencer" : "Terminer"),
-              ),
-            )
-          ],
+              Container(
+                padding: const EdgeInsets.all(12),
+                child: ElevatedButton(
+                  // onPressed: () {
+                  //   showModalBottomSheet(
+                  //     context: context,
+                  //     builder: (context) {
+                  //       return Container(
+                  //         padding: const EdgeInsets.all(12),
+                  //         width: Get.width,
+                  //         decoration: const BoxDecoration(color: Colors.white),
+                  //         child: Row(
+                  //           crossAxisAlignment: CrossAxisAlignment.center,
+                  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //           children: [
+                  //             const Text(
+                  //               "Demande de connexion",
+                  //               style: TextStyle(
+                  //                 fontSize: 18,
+                  //                 color: Color(0xFF24292E),
+                  //                 fontFamily: "Poppins",
+                  //               ),
+                  //             ),
+                  //             ElevatedButton(
+                  //               onPressed: () async {},
+                  //               child: const Text("Accepter"),
+                  //             )
+                  //           ],
+                  //         ),
+                  //       );
+                  //     },
+                  //   );
+                  // },
+                  onPressed: () => courseStarted ? endCourse() : startCourse(),
+                  // onPressed: () => customStartAdvertising(),
+                  child: Text(!courseStarted ? "Commencer" : "Terminer"),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -221,58 +285,83 @@ class _KokomSenderState extends State<KokomSender> {
     }
   }
 
+  // void onConnectionInit() {
   void onConnectionInit(String id, ConnectionInfo info) {
     setState(() {
       endpointMap[id] = info;
     });
-    Nearby().acceptConnection(
-      id,
-      onPayLoadRecieved: (endid, payload) async {
-        if (payload.type == PayloadType.BYTES) {
-          String str = String.fromCharCodes(payload.bytes!);
-          // showSnackbar("$endid: $str");
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          width: Get.width,
+          decoration:
+              BoxDecoration(color: const Color(0XFF24292E).withOpacity(0.5)),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("Demande de connextion"),
+              ElevatedButton(
+                onPressed: () async {
+                  Nearby().acceptConnection(
+                    id,
+                    onPayLoadRecieved: (endid, payload) async {
+                      if (payload.type == PayloadType.BYTES) {
+                        String str = String.fromCharCodes(payload.bytes!);
+                        // showSnackbar("$endid: $str");
 
-          // if (str.contains(':')) {
-          //   // used for file payload as file payload is mapped as
-          //   // payloadId:filename
-          //   int payloadId = int.parse(str.split(':')[0]);
-          //   String fileName = (str.split(':')[1]);
+                        // if (str.contains(':')) {
+                        //   // used for file payload as file payload is mapped as
+                        //   // payloadId:filename
+                        //   int payloadId = int.parse(str.split(':')[0]);
+                        //   String fileName = (str.split(':')[1]);
 
-          //   if (map.containsKey(payloadId)) {
-          //     if (tempFileUri != null) {
-          //       moveFile(tempFileUri!, fileName);
-          //     } else {
-          //       showSnackbar("File doesn't exist");
-          //     }
-          //   } else {
-          //     //add to map if not already
-          //     map[payloadId] = fileName;
-          //   }
-          // }
-        } else if (payload.type == PayloadType.FILE) {
-          // showSnackbar("$endid: File transfer started");
-          // tempFileUri = payload.uri;
-        }
-      },
-      onPayloadTransferUpdate: (endid, payloadTransferUpdate) {
-        if (payloadTransferUpdate.status == PayloadStatus.IN_PROGRESS) {
-          // print(payloadTransferUpdate.bytesTransferred);
-        } else if (payloadTransferUpdate.status == PayloadStatus.FAILURE) {
-          debugPrint("failed");
-          // showSnackbar("$endid: FAILED to transfer file");
-        } else if (payloadTransferUpdate.status == PayloadStatus.SUCCESS) {
-          // showSnackbar(
-          //     "$endid success, total bytes = ${payloadTransferUpdate.totalBytes}");
+                        //   if (map.containsKey(payloadId)) {
+                        //     if (tempFileUri != null) {
+                        //       moveFile(tempFileUri!, fileName);
+                        //     } else {
+                        //       showSnackbar("File doesn't exist");
+                        //     }
+                        //   } else {
+                        //     //add to map if not already
+                        //     map[payloadId] = fileName;
+                        //   }
+                        // }
+                      } else if (payload.type == PayloadType.FILE) {
+                        // showSnackbar("$endid: File transfer started");
+                        // tempFileUri = payload.uri;
+                      }
+                    },
+                    onPayloadTransferUpdate: (endid, payloadTransferUpdate) {
+                      if (payloadTransferUpdate.status ==
+                          PayloadStatus.IN_PROGRESS) {
+                        // print(payloadTransferUpdate.bytesTransferred);
+                      } else if (payloadTransferUpdate.status ==
+                          PayloadStatus.FAILURE) {
+                        debugPrint("failed");
+                        // showSnackbar("$endid: FAILED to transfer file");
+                      } else if (payloadTransferUpdate.status ==
+                          PayloadStatus.SUCCESS) {
+                        // showSnackbar(
+                        //     "$endid success, total bytes = ${payloadTransferUpdate.totalBytes}");
 
-          // if (map.containsKey(payloadTransferUpdate.id)) {
-          //   //rename the file now
-          //   String name = map[payloadTransferUpdate.id]!;
-          //   moveFile(tempFileUri!, name);
-          // } else {
-          //   //bytes not received till yet
-          //   map[payloadTransferUpdate.id] = "";
-          // }
-        }
+                        // if (map.containsKey(payloadTransferUpdate.id)) {
+                        //   //rename the file now
+                        //   String name = map[payloadTransferUpdate.id]!;
+                        //   moveFile(tempFileUri!, name);
+                        // } else {
+                        //   //bytes not received till yet
+                        //   map[payloadTransferUpdate.id] = "";
+                        // }
+                      }
+                    },
+                  );
+                },
+                child: const Text("Accepter"),
+              )
+            ],
+          ),
+        );
       },
     );
   }
