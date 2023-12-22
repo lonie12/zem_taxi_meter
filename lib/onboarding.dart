@@ -153,13 +153,14 @@ class _OnBoardingState extends State<OnBoarding> {
         goToNexPage();
         break;
       case 1:
-        if (!(await Future.wait([
+        var bluetoothPermission = (await Future.wait([
           Permission.bluetooth.isGranted,
           Permission.bluetoothAdvertise.isGranted,
           Permission.bluetoothConnect.isGranted,
           Permission.bluetoothScan.isGranted,
         ]))
-            .any((element) => false)) {
+            .any((element) => false);
+        if (bluetoothPermission) {
           return [
             Permission.bluetooth,
             Permission.bluetoothAdvertise,
