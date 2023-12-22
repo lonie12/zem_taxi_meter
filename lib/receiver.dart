@@ -17,7 +17,7 @@ class _KokomReceiverState extends State<KokomReceiver> {
   final Strategy strategy = Strategy.P2P_STAR;
   Map<String, ConnectionInfo> endpointMap = {};
   var streamConnected = false;
-  var streamData = ["", ""];
+  var streamData = ["0", "0"];
 
   @override
   void initState() {
@@ -66,7 +66,7 @@ class _KokomReceiverState extends State<KokomReceiver> {
                           ),
                           child: Center(
                             child: Text(
-                              "$streamData[0]",
+                              streamData[0],
                               style: const TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
@@ -77,7 +77,7 @@ class _KokomReceiverState extends State<KokomReceiver> {
                         ),
                         const SizedBox(height: 15),
                         Text(
-                          "Distance parcourure: $streamData[1] km",
+                          "Distance parcourure:  ${streamData[1]}km",
                           style: const TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.bold,
@@ -93,7 +93,10 @@ class _KokomReceiverState extends State<KokomReceiver> {
             Container(
               padding: const EdgeInsets.all(12),
               child: ElevatedButton(
-                onPressed: () => customStartDiscovery(),
+                onPressed: () async {
+                  await Nearby().stopDiscovery();
+                  customStartDiscovery();
+                },
                 child: const Text("Connecter"),
               ),
             )

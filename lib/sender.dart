@@ -110,10 +110,11 @@ class _KokomSenderState extends State<KokomSender> {
 
   Future<void> startCourse() async {
     // rideBalance = basePrice;
+    await Nearby().stopAdvertising();
+    customStartAdvertising();
     courseStarted = true;
     setState(() {});
     begin();
-    customStartAdvertising();
   }
 
   Future<void> endCourse() async {
