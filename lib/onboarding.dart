@@ -37,6 +37,8 @@ class _OnBoardingState extends State<OnBoarding> {
           children: [
             Expanded(
               child: PageView.builder(
+                pageSnapping: false,
+                physics: const NeverScrollableScrollPhysics(),
                 // allowImplicitScrolling: true,
                 controller: _controller,
                 itemCount: 3,
