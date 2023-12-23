@@ -71,7 +71,7 @@ class _OnBoardingState extends State<OnBoarding> {
                         ),
                         const SizedBox(height: 35),
                         Text(
-                          "Votre position",
+                          getText(),
                           textAlign: TextAlign.center,
                           style: Theme.of(context)
                               .textTheme
@@ -83,7 +83,7 @@ class _OnBoardingState extends State<OnBoarding> {
                         ),
                         const SizedBox(height: 20),
                         Text(
-                          Helper.lorem,
+                          getDescription(),
                           style: Theme.of(context)
                               .textTheme
                               .bodyLarge!
@@ -116,7 +116,7 @@ class _OnBoardingState extends State<OnBoarding> {
                   ),
                 ),
                 child: Text(
-                  "Suivant",
+                  currentIndex != 2 ? "Suivant" : "Terminé",
                   style: Theme.of(context)
                       .textTheme
                       .bodyLarge!
@@ -221,5 +221,31 @@ class _OnBoardingState extends State<OnBoarding> {
   Future<void> savePermission() async {
     LocalStorageManager localStorageManager = LocalStorageManager();
     await localStorageManager.saveEnablePermissions('permission', true);
+  }
+
+  String getText() {
+    switch (currentIndex) {
+      case 0:
+        return "Localisation";
+      case 1:
+        return "Bluetooth";
+      case 2:
+        return "Cast";
+      default:
+        return "Autres";
+    }
+  }
+
+  String getDescription() {
+    switch (currentIndex) {
+      case 0:
+        return "L'autorisation de localisation est indispensable pour calculer avec précision le coût et la distance de votre trajet, en se basant sur les points de départ et d'arrivée du client.";
+      case 1:
+        return "L'autorisation Bluetooth est requise pour établir une connexion entre le smartphone du client et le chauffeur ou le conducteur de zem.";
+      case 2:
+        return "L'autorisation de Cast est nécessaire pour diffuser les informations tarifaires de base, le coût par kilomètre, ainsi que le prix et la distance parcourue pendant le trajet entre le client et le chauffeur ou le conducteur de zem.";
+      default:
+        return "Autre";
+    }
   }
 }
