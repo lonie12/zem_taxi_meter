@@ -24,7 +24,7 @@ class DriverIndex extends StatelessWidget {
                 //     height: 300,
                 //   ),
                 // ),
-                InkWell(onTap: () => Get.to(const DriverLive()), child: Go())
+                InkWell(onTap: () => Get.to(const DriverLive()), child: const Go())
               ],
             ),
           ),

@@ -36,3 +36,8 @@ dynamic launchBrowser(url) async {
     debugPrint(e.toString());
   }
 }
+
+int getYear() {
+  DateTime now = DateTime.now();
+  return now.year;
+}

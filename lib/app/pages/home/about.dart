@@ -4,7 +4,7 @@ import 'package:kokom/helper/helper.dart';
 import 'package:kokom/utils.dart';
 
 class About extends StatelessWidget {
-  const About({Key? key});
+  const About({ Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class About extends StatelessWidget {
                     children: [
                       Text(
                         "A propos",
-                        style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                               color: Helper.primary,
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
@@ -36,7 +36,7 @@ class About extends StatelessWidget {
                       ),
                       Text(
                         "Version 1.0.0 (Bêta)",
-                        style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                               color: Helper.primary,
                               fontSize: 15,
                             ),
@@ -74,7 +74,7 @@ class About extends StatelessWidget {
                               textAlign: TextAlign.center,
                               style: Theme.of(context)
                                   .textTheme
-                                  .bodyText1!
+                                  .bodyLarge!
                                   .copyWith(
                                     color: Helper.greyTextColor,
                                     fontSize: 14,
@@ -117,7 +117,7 @@ class About extends StatelessWidget {
                               textAlign: TextAlign.center,
                               style: Theme.of(context)
                                   .textTheme
-                                  .bodyText1!
+                                  .bodyLarge!
                                   .copyWith(
                                     color: Helper.greyTextColor,
                                     fontSize: 14,
@@ -160,7 +160,7 @@ class About extends StatelessWidget {
                               textAlign: TextAlign.center,
                               style: Theme.of(context)
                                   .textTheme
-                                  .bodyText1!
+                                  .bodyLarge!
                                   .copyWith(
                                     color: Helper.greyTextColor,
                                     fontSize: 14,
@@ -203,7 +203,7 @@ class About extends StatelessWidget {
                               textAlign: TextAlign.center,
                               style: Theme.of(context)
                                   .textTheme
-                                  .bodyText1!
+                                  .bodyLarge!
                                   .copyWith(
                                     color: Helper.greyTextColor,
                                     fontSize: 14,
@@ -230,9 +230,9 @@ class About extends StatelessWidget {
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(15.0),
         child: Text(
-          "Made with ❤️ in Togo 🇹🇬.\n© Tous droits réservés, Reskode_ 2024.\n",
+          "Made with ❤️ in Togo 🇹🇬\n© Tous droits réservés, Reskode_ ${getYear()}\n",
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodyText1!.copyWith(
+          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                 color: Helper.greyTextColor,
                 fontSize: 13,
                 fontWeight: FontWeight.bold,
