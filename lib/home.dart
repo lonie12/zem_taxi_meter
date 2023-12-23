@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kokom/app/pages/home/about.dart';
 import 'package:kokom/helper/helper.dart';
 import 'package:kokom/receiver.dart';
 import 'package:kokom/sender.dart';
@@ -34,17 +35,17 @@ class Home extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 15),
-                    Text(
-                      "Version 1.0.0",
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Helper.greyTextColor),
-                    ),
+                    //   const SizedBox(height: 15),
+                    // Text(
+                    //   "Version 1.0.0 (Beta)",
+                    //   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                    //       fontSize: 18,
+                    //       fontWeight: FontWeight.bold,
+                    //       color: Helper.greyTextColor),
+                    // ),
                     const SizedBox(height: 12),
                     InkWell(
-                      onTap: () {},
+                      onTap: () => Get.to(const About()),
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 10,
@@ -66,22 +67,22 @@ class Home extends StatelessWidget {
                 ),
               ),
             ),
-            InkWell(
-              onTap: () {},
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                child: Text(
-                  "Contactez le développeur",
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Helper.otherPrimaryColor),
-                ),
-              ),
-            ),
+            // InkWell(
+            //   onTap: () {},
+            //   child: Container(
+            //     padding: const EdgeInsets.symmetric(
+            //       horizontal: 12,
+            //       vertical: 6,
+            //     ),
+            //     child: Text(
+            //       "Contactez le développeur",
+            //       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+            //           fontSize: 16,
+            //           fontWeight: FontWeight.bold,
+            //           color: Helper.otherPrimaryColor),
+            //     ),
+            //   ),
+            // ),
             const SizedBox(height: 20),
             Container(
               padding: const EdgeInsets.all(12),

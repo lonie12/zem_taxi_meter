@@ -23,6 +23,7 @@ dependencies:
   shared_preferences: ^2.2.2
   carbon_icons: ^0.0.1+2
   localstorage: ^4.0.1+4
+  url_launcher: ^6.2.2
 
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1

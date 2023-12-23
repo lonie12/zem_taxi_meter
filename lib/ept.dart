@@ -380,7 +380,7 @@ class _MyBodyState extends State<Body> {
                 color: Helper.primary,
                 size: 32.0,
                 width: 200.0,
-                onClick: () => Get.to(DefinePrice()),
+                onClick: () => Get.to(const DefinePrice()),
               ),
             ),
             const SizedBox(width: 20),
