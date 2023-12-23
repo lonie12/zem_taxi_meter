@@ -230,7 +230,7 @@ class About extends StatelessWidget {
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(15.0),
         child: Text(
-          "Made with ❤️ in Togo.\n© Tous droits réservés, Reskode_ 2024.\n",
+          "Made with ❤️ in Togo 🇹🇬.\n© Tous droits réservés, Reskode_ 2024.\n",
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodyText1!.copyWith(
                 color: Helper.greyTextColor,
