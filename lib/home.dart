@@ -67,22 +67,22 @@ class Home extends StatelessWidget {
                 ),
               ),
             ),
-            InkWell(
-              onTap: () {},
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                child: Text(
-                  "Contactez le développeur",
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Helper.otherPrimaryColor),
-                ),
-              ),
-            ),
+            // InkWell(
+            //   onTap: () {},
+            //   child: Container(
+            //     padding: const EdgeInsets.symmetric(
+            //       horizontal: 12,
+            //       vertical: 6,
+            //     ),
+            //     child: Text(
+            //       "Contactez le développeur",
+            //       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+            //           fontSize: 16,
+            //           fontWeight: FontWeight.bold,
+            //           color: Helper.otherPrimaryColor),
+            //     ),
+            //   ),
+            // ),
             const SizedBox(height: 20),
             Container(
               padding: const EdgeInsets.all(12),

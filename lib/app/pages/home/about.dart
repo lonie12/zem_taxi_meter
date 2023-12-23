@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kokom/app/widgets/appbar.dart';
 import 'package:kokom/helper/helper.dart';
+import 'package:kokom/utils.dart';
 
 class About extends StatelessWidget {
   const About({Key? key});
@@ -8,11 +9,12 @@ class About extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Appbar("", backbutton: true),
+            Appbar("A propos", backbutton: true),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -24,14 +26,14 @@ class About extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "A propos",
-                        style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                              color: Helper.primary,
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
+                      // Text(
+                      //   "A propos",
+                      //   style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                      //         color: Helper.primary,
+                      //         fontSize: 15,
+                      //         fontWeight: FontWeight.bold,
+                      //       ),
+                      // ),
                       Text(
                         "Version 1.0.0 (Bêta)",
                         style: Theme.of(context).textTheme.bodyText1!.copyWith(
@@ -46,7 +48,7 @@ class About extends StatelessWidget {
                   height: 20,
                 ),
                 InkWell(
-                  // onTap: () => {},
+                  onTap: () => launchBrowser(""),
                   child: Column(
                     children: [
                       Padding(
@@ -89,7 +91,7 @@ class About extends StatelessWidget {
                   ),
                 ),
                 InkWell(
-                  // onTap: () => {},
+                  onTap: () => launchBrowser("https://wa.me/+22890364358"),
                   child: Column(
                     children: [
                       Padding(
@@ -132,7 +134,7 @@ class About extends StatelessWidget {
                   ),
                 ),
                 InkWell(
-                  // onTap: () => {},
+                  onTap: () => launchBrowser("https://wa.me/+22890364358"),
                   child: Column(
                     children: [
                       Padding(
@@ -175,7 +177,7 @@ class About extends StatelessWidget {
                   ),
                 ),
                 InkWell(
-                  // onTap: () => {},
+                  onTap: () => launchBrowser(""),
                   child: Column(
                     children: [
                       Padding(
