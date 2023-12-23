@@ -1,7 +1,7 @@
 name: kokom
-description: Reskode kokom app.
+description: Reskode kokom app Vooom.
 publish_to: 'none'
-version: 0.1.0
+version: 1.0.0
 
 environment:
   sdk: '>=3.1.5 <4.0.0'

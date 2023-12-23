@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:kokom/ept.dart';
 import 'package:kokom/helper/helper.dart';
+import 'package:kokom/home.dart';
 import 'package:location/location.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -185,7 +185,7 @@ class _OnBoardingState extends State<OnBoarding> {
         if (!locationServiceEnabled) {
           return await Location.instance.requestService();
         }
-        Get.offAll(const Body());
+        Get.offAll(const Home());
         break;
       default:
         return false;

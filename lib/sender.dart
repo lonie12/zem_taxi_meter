@@ -9,16 +9,17 @@ import 'package:kokom/helper/helper.dart';
 import 'package:kokom/utils.dart';
 import 'package:location/location.dart';
 import 'package:nearby_connections/nearby_connections.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 // import 'package:wakelock_plus/wakelock_plus.dart';
 
 class KokomSender extends StatefulWidget {
   const KokomSender({
     super.key,
-    required this.baseprice,
-    required this.kmprice,
+    this.baseprice = 100,
+    this.kmprice = 50,
   });
-  final int baseprice;
-  final int kmprice;
+  final int? baseprice;
+  final int? kmprice;
   @override
   State<KokomSender> createState() => _KokomSenderState();
 }
@@ -27,13 +28,11 @@ class _KokomSenderState extends State<KokomSender> {
   final Location location = Location();
   StreamSubscription<LocationData>? locationSubscription;
 
-  var userHasRide = false;
-  var courseStarted = false;
+  var startedValue = "not"; //on end ;
   var streamConnected = false;
   List<double> originLocation = [0.0, 0.0];
   var rideDistance = 0.0;
   var rideBalance = 0;
-  var basePrice = 50;
 
   final String userName = Random().nextInt(10000).toString();
   final Strategy strategy = Strategy.P2P_STAR;
@@ -41,16 +40,16 @@ class _KokomSenderState extends State<KokomSender> {
 
   @override
   void initState() {
-    // WakelockPlus.enable();
+    WakelockPlus.enable();
     super.initState();
   }
 
   @override
   dispose() {
     locationSubscription?.cancel();
-    setState(() {
-      locationSubscription = null;
-    });
+    locationSubscription = null;
+    Nearby().stopDiscovery();
+    Nearby().stopAllEndpoints();
     super.dispose();
   }
 
@@ -68,7 +67,7 @@ class _KokomSenderState extends State<KokomSender> {
       locationSubscription?.cancel();
     }).listen((LocationData currentLocation) async {
       var currentPosition = await Geo.Geolocator.getCurrentPosition();
-      // debugPrint(currentPosition.toString());
+      debugPrint(currentPosition.toString());
       double distanceInMeters = Geo.Geolocator.distanceBetween(
         originLocation[0],
         originLocation[1],
@@ -89,16 +88,14 @@ class _KokomSenderState extends State<KokomSender> {
         ];
 
         // Mettre à jour le solde et l'interface utilisateur
-        var newBalance = basePrice * rideDistance.round();
-        rideBalance = newBalance;
+        rideBalance += widget.kmprice! * rideDistance.round();
         setState(() {});
 
+        // Send to clients
         endpointMap.forEach((key, value) {
           Nearby().sendBytesPayload(
             key,
-            Uint8List.fromList(
-              "$rideBalance|$rideDistance".codeUnits,
-            ),
+            Uint8List.fromList("$rideBalance|$rideDistance".codeUnits),
           );
         });
       } else {}
@@ -109,20 +106,22 @@ class _KokomSenderState extends State<KokomSender> {
     var currentLocation = await Geo.Geolocator.getCurrentPosition();
     originLocation = [];
     originLocation = [currentLocation.latitude, currentLocation.longitude];
-    // rideBalance = basePrice;
+    rideBalance = widget.baseprice!;
     await Nearby().stopDiscovery();
+    Nearby().stopAllEndpoints();
     await customStartDiscovery();
-    courseStarted = true;
+    startedValue = "on";
     setState(() {});
     begin();
   }
 
   Future<void> endCourse() async {
+    Nearby().stopDiscovery();
     locationSubscription?.cancel();
-
     setState(() {
       locationSubscription = null;
     });
+    startedValue = "end";
   }
 
   @override
@@ -202,27 +201,76 @@ class _KokomSenderState extends State<KokomSender> {
                         ),
                       ),
                       const SizedBox(height: 15),
-                      Text(
-                        "Distance parcourue",
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: const Color(0xFF24292E),
-                            ),
-                      ),
-                      Text(
-                        "$rideDistance km",
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: const Color(0xFF24292E),
-                            ),
-                      )
+                      startedValue == "on"
+                          ? Text(
+                              "Distance parcourue",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color(0xFF24292E),
+                                  ),
+                            )
+                          : const SizedBox(),
+                      startedValue == "on"
+                          ? Text(
+                              "$rideDistance km",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color(0xFF24292E),
+                                  ),
+                            )
+                          : const SizedBox(),
+                      startedValue == "end"
+                          ? Text(
+                              "Course terminée",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.red,
+                                  ),
+                            )
+                          : const SizedBox(),
+                      startedValue == "end"
+                          ? Text(
+                              "Distance total",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: Helper.primary,
+                                  ),
+                            )
+                          : const SizedBox(),
+                      startedValue == "end"
+                          ? Text(
+                              "$rideDistance km",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: Helper.primary,
+                                  ),
+                            )
+                          : const SizedBox(),
                     ],
                   ),
                 ),
               ),
-              !courseStarted
+              startedValue == "not"
                   ? Container(
                       width: 80,
                       height: 80,
@@ -251,27 +299,57 @@ class _KokomSenderState extends State<KokomSender> {
                         ),
                       ),
                     )
-                  : Container(
-                      width: Get.width,
-                      padding: const EdgeInsets.all(12),
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.resolveWith(
-                              (states) => Helper.danger),
-                          padding: MaterialStateProperty.all(
-                            const EdgeInsets.symmetric(vertical: 11),
+                  : startedValue == "on"
+                      ? Container(
+                          width: Get.width,
+                          padding: const EdgeInsets.all(12),
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStateProperty.resolveWith(
+                                      (states) => Helper.danger),
+                              padding: MaterialStateProperty.all(
+                                const EdgeInsets.symmetric(vertical: 11),
+                              ),
+                            ),
+                            child: Text(
+                              "Terminer la course !",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(color: Colors.white, fontSize: 16),
+                            ),
+                            onPressed: () => endCourse(),
                           ),
-                        ),
-                        child: Text(
-                          "Terminer la course !",
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyLarge!
-                              .copyWith(color: Colors.white, fontSize: 16),
-                        ),
-                        onPressed: () => endCourse(),
-                      ),
-                    )
+                        )
+                      : const SizedBox()
+              // : Container(
+              //     width: Get.width,
+              //     padding: const EdgeInsets.all(12),
+              //     child: ElevatedButton(
+              //       style: ButtonStyle(
+              //         backgroundColor:
+              //             MaterialStateProperty.resolveWith(
+              //                 (states) => Helper.primary),
+              //         padding: MaterialStateProperty.all(
+              //           const EdgeInsets.symmetric(vertical: 11),
+              //         ),
+              //       ),
+              //       child: Text(
+              //         "Recommencer une course !",
+              //         style: Theme.of(context)
+              //             .textTheme
+              //             .bodyLarge!
+              //             .copyWith(color: Colors.white, fontSize: 16),
+              //       ),
+              //       onPressed: () => Get.off(
+              //         () => const KokomSender(
+              //           baseprice: 0,
+              //           kmprice: 0,
+              //         ),
+              //       ),
+              //     ),
+              //   ),
             ],
           ),
         ),
@@ -285,7 +363,7 @@ class _KokomSenderState extends State<KokomSender> {
         userName,
         strategy,
         onEndpointFound: (id, name, serviceId) {
-          Future.delayed(const Duration(seconds: 3), () {
+          Future.delayed(const Duration(seconds: 4), () {
             Nearby().requestConnection(
               userName,
               id,
@@ -327,6 +405,7 @@ class _KokomSenderState extends State<KokomSender> {
     setState(() {
       endpointMap[id] = info;
     });
+    debugPrint("$id ${info.endpointName.toString()}");
     showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -348,58 +427,11 @@ class _KokomSenderState extends State<KokomSender> {
               ),
               ElevatedButton(
                 onPressed: () async {
+                  Navigator.pop(context);
                   Nearby().acceptConnection(
                     id,
-                    onPayLoadRecieved: (endid, payload) async {
-                      if (payload.type == PayloadType.BYTES) {
-                        // String str = String.fromCharCodes(payload.bytes!);
-                        // showSnackbar("$endid: $str");
-
-                        // if (str.contains(':')) {
-                        //   // used for file payload as file payload is mapped as
-                        //   // payloadId:filename
-                        //   int payloadId = int.parse(str.split(':')[0]);
-                        //   String fileName = (str.split(':')[1]);
-
-                        //   if (map.containsKey(payloadId)) {
-                        //     if (tempFileUri != null) {
-                        //       moveFile(tempFileUri!, fileName);
-                        //     } else {
-                        //       showSnackbar("File doesn't exist");
-                        //     }
-                        //   } else {
-                        //     //add to map if not already
-                        //     map[payloadId] = fileName;
-                        //   }
-                        // }
-                      } else if (payload.type == PayloadType.FILE) {
-                        // showSnackbar("$endid: File transfer started");
-                        // tempFileUri = payload.uri;
-                      }
-                    },
-                    onPayloadTransferUpdate: (endid, payloadTransferUpdate) {
-                      if (payloadTransferUpdate.status ==
-                          PayloadStatus.IN_PROGRESS) {
-                        // print(payloadTransferUpdate.bytesTransferred);
-                      } else if (payloadTransferUpdate.status ==
-                          PayloadStatus.FAILURE) {
-                        debugPrint("failed");
-                        // showSnackbar("$endid: FAILED to transfer file");
-                      } else if (payloadTransferUpdate.status ==
-                          PayloadStatus.SUCCESS) {
-                        // showSnackbar(
-                        //     "$endid success, total bytes = ${payloadTransferUpdate.totalBytes}");
-
-                        // if (map.containsKey(payloadTransferUpdate.id)) {
-                        //   //rename the file now
-                        //   String name = map[payloadTransferUpdate.id]!;
-                        //   moveFile(tempFileUri!, name);
-                        // } else {
-                        //   //bytes not received till yet
-                        //   map[payloadTransferUpdate.id] = "";
-                        // }
-                      }
-                    },
+                    onPayLoadRecieved: (endid, payload) async {},
+                    onPayloadTransferUpdate: (endid, payloadTransferUpdate) {},
                   );
                 },
                 child: const Text("Accepter"),
