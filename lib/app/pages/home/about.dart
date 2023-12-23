@@ -14,26 +14,26 @@ class About extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Appbar("A propos", backbutton: true),
+            Appbar("", backbutton: true),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(
-                  height: 30,
+                  height: 10,
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Text(
-                      //   "A propos",
-                      //   style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                      //         color: Helper.primary,
-                      //         fontSize: 15,
-                      //         fontWeight: FontWeight.bold,
-                      //       ),
-                      // ),
+                      Text(
+                        "A propos",
+                        style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                              color: Helper.primary,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
                       Text(
                         "Version 1.0.0 (Bêta)",
                         style: Theme.of(context).textTheme.bodyText1!.copyWith(
