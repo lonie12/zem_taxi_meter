@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:kokom/ept.dart';
-import 'package:kokom/helper/localstorage.dart';
-import 'package:kokom/home.dart';
-import 'package:kokom/onboarding.dart';
-import 'package:kokom/theme.dart';
+import 'package:kokom/helper/app.dart';
+import 'package:kokom/app/pages/home/home.dart';
+import 'package:kokom/app/layout/onboarding.dart';
+import 'package:kokom/helper/theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  LocalStorageManager localStorageManager = LocalStorageManager();
-  bool? permission =
-      await localStorageManager.getEnablePermissions('permission');
-
-  runApp(MainApp(permission: permission ?? false));
+  var appData = await App.initialize();
+  runApp(MainApp(permission: appData.permission));
 }
 
 class MainApp extends StatelessWidget {
@@ -24,16 +19,11 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      builder: (context, child) {
-        return MediaQuery(
-          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-          child: child!,
-        );
-      },
+      builder: staticTheme,
       title: "Vooom",
       theme: appTheme,
-      home: permission ? const Home() : const OnBoarding(),
       debugShowCheckedModeBanner: false,
+      home: permission ? const Home() : const OnBoarding(),
     );
   }
 }

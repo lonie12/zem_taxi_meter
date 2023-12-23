@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:kokom/ept.dart';
 import 'package:kokom/helper/helper.dart';
 import 'package:kokom/helper/localstorage.dart';
-import 'package:kokom/home.dart';
+import 'package:kokom/app/pages/home/home.dart';
 import 'package:location/location.dart';
 import 'package:lottie/lottie.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:localstorage/localstorage.dart';
 
 class OnBoarding extends StatefulWidget {
   const OnBoarding({super.key});
@@ -62,7 +60,7 @@ class _OnBoardingState extends State<OnBoarding> {
                           height: 200,
                           width: 200,
                           decoration: BoxDecoration(
-                            color: Helper.warning.withOpacity(0.3),
+                            color: Helper.warning.withOpacity(0.5),
                             border: Border.all(
                               width: 5,
                               color: const Color(0XFF5F748A),
@@ -130,21 +128,6 @@ class _OnBoardingState extends State<OnBoarding> {
                 ),
                 onPressed: () => onClickCustom(currentIndex),
               ),
-              // Button(
-              //   title:
-              //       currentIndex == contents.length - 1 ? "Terminé" : "Suivant",
-              //   background: Helper.primary,
-              //   foreground: Colors.white,
-              //   onClick: () {
-              //     if (currentIndex == contents.length - 1) {
-              //       Get.to(() => const MidjoPartnerPermissions());
-              //     }
-              //     _controller.nextPage(
-              //       duration: const Duration(milliseconds: 100),
-              //       curve: Curves.bounceIn,
-              //     );
-              //   },
-              // ),
             ),
           ],
         ),
@@ -195,7 +178,7 @@ class _OnBoardingState extends State<OnBoarding> {
           return await Location.instance.requestService();
         }
         savePermission();
-        Get.offAll(const Home());
+        Get.offAll(() => const Home());
         break;
       default:
         return false;
@@ -212,7 +195,6 @@ class _OnBoardingState extends State<OnBoarding> {
   Container buildDot(int index, BuildContext context) {
     return Container(
       height: 8,
-      // width: currentIndex == index ? 25 : 10,
       width: 8,
       margin: const EdgeInsets.only(right: 5),
       decoration: BoxDecoration(

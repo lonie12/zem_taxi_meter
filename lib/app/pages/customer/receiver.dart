@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:kokom/helper/helper.dart';
 import 'package:nearby_connections/nearby_connections.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
-// import 'package:wakelock_plus/wakelock_plus.dart';
 
 class KokomReceiver extends StatefulWidget {
   const KokomReceiver({super.key});
@@ -19,7 +18,7 @@ class _KokomReceiverState extends State<KokomReceiver> {
   final Strategy strategy = Strategy.P2P_STAR;
   Map<String, ConnectionInfo> endpointMap = {};
   var streamConnected = false;
-  var streamData = ["", ""];
+  var streamData = ["0", "0"];
 
   @override
   void initState() {

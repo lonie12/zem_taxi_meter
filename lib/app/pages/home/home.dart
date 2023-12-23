@@ -2,11 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kokom/app/pages/home/about.dart';
 import 'package:kokom/helper/helper.dart';
-import 'package:kokom/receiver.dart';
-import 'package:kokom/sender.dart';
+import 'package:kokom/app/pages/customer/receiver.dart';
+import 'package:kokom/app/pages/driver/sender.dart';
+import 'package:shorebird_code_push/shorebird_code_push.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({super.key});
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  final shorebirdCodePush = ShorebirdCodePush();
+
+  void checkForUpdates() async {
+    final isUpdateAvailable =
+        await shorebirdCodePush.isNewPatchAvailableForDownload();
+    if (isUpdateAvailable) {
+      await shorebirdCodePush.downloadUpdateIfAvailable();
+    }
+  }
+
+  @override
+  void initState() {
+    checkForUpdates();
+    super.initState();
+  }
 
   @override
   Widget build(context) {

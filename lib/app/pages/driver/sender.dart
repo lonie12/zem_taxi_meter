@@ -1,3 +1,5 @@
+// ignore_for_file: library_prefixes
+
 import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
@@ -5,9 +7,10 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart' as Geo;
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:kokom/helper/helper.dart';
-import 'package:kokom/home.dart';
-import 'package:kokom/utils.dart';
+import 'package:kokom/app/pages/home/home.dart';
+import 'package:kokom/helper/utils.dart';
 import 'package:location/location.dart';
 import 'package:nearby_connections/nearby_connections.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -28,6 +31,7 @@ class KokomSender extends StatefulWidget {
 class _KokomSenderState extends State<KokomSender> {
   final Location location = Location();
   StreamSubscription<LocationData>? locationSubscription;
+  NumberFormat formater = NumberFormat.decimalPattern('fr_FR');
 
   var startedValue = "not"; //on end ;
   var streamConnected = false;
@@ -78,25 +82,27 @@ class _KokomSenderState extends State<KokomSender> {
 
       // Convertir la distance en kilomètres
       double distanceInKm = distanceInMeters / 1000;
+      rideDistance += distanceInKm;
 
       if (distanceInKm >= 1) {
         originLocation = [];
-        // Mettre à jour la distance parcourue
-        rideDistance += distanceInKm;
         originLocation = [
           currentPosition.latitude,
           currentPosition.longitude,
         ];
 
         // Mettre à jour le solde et l'interface utilisateur
-        rideBalance += widget.kmprice! * rideDistance.round();
+        rideBalance =
+            (widget.kmprice! * rideDistance.floor()) + widget.baseprice!;
         setState(() {});
 
         // Send to clients
         endpointMap.forEach((key, value) {
           Nearby().sendBytesPayload(
             key,
-            Uint8List.fromList("$rideBalance|$rideDistance".codeUnits),
+            Uint8List.fromList(
+              "$rideBalance|${formater.format(rideDistance)}".codeUnits,
+            ),
           );
         });
       } else {}
@@ -140,7 +146,7 @@ class _KokomSenderState extends State<KokomSender> {
                 child: InkWell(
                   onTap: () async {
                     await endCourse();
-                    Get.offAll(const Home());
+                    Get.offAll(() => const Home());
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
@@ -301,7 +307,10 @@ class _KokomSenderState extends State<KokomSender> {
                                     MaterialStateProperty.resolveWith(
                                         (states) => Helper.otherPrimaryColor),
                               ),
-                              onPressed: () => {},
+                              onPressed: () => showSnackbar(
+                                context,
+                                "Bientôt disponible",
+                              ),
                               child: const Text("Modifier"),
                             )
                           : const SizedBox(),

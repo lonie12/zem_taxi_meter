@@ -9,7 +9,7 @@ class MyButton extends StatelessWidget {
   final VoidCallback onClick;
   final double borderRadius;
 
-  const MyButton({
+  const MyButton({super.key, 
     required this.title,
     required this.color,
     this.icon,

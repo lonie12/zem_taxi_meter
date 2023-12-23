@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:kokom/app/widgets/appbar.dart';
 import 'package:kokom/helper/helper.dart';
-import 'package:kokom/utils.dart';
+import 'package:kokom/helper/utils.dart';
 
 class About extends StatelessWidget {
-  const About({Key? key});
+  const About({super.key});
+
 
   @override
   Widget build(BuildContext context) {

@@ -24,8 +24,8 @@ class LocalStorageManager {
   Future<void> getPrices() async {
     final dynamic savedData = storage.getItem('my_data');
     if (savedData != null) {
-      var basePrice = savedData['basePrice'].toString();
-      var kmPrice = savedData['kmPrice'].toString();
+      savedData['basePrice'].toString();
+      savedData['kmPrice'].toString();
     }
   }
 }
