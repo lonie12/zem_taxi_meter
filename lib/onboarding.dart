@@ -5,6 +5,7 @@ import 'package:kokom/helper/helper.dart';
 import 'package:kokom/helper/localstorage.dart';
 import 'package:kokom/home.dart';
 import 'package:location/location.dart';
+import 'package:lottie/lottie.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:localstorage/localstorage.dart';
 
@@ -67,6 +68,11 @@ class _OnBoardingState extends State<OnBoarding> {
                               color: const Color(0XFF5F748A),
                             ),
                             borderRadius: BorderRadius.circular(200),
+                          ),
+                          child: Lottie.asset(
+                            getImage(),
+                            width: 200,
+                            height: 200,
                           ),
                         ),
                         const SizedBox(height: 35),
@@ -226,7 +232,7 @@ class _OnBoardingState extends State<OnBoarding> {
   String getText() {
     switch (currentIndex) {
       case 0:
-        return "Localisation";
+        return "Position";
       case 1:
         return "Bluetooth";
       case 2:
@@ -239,13 +245,26 @@ class _OnBoardingState extends State<OnBoarding> {
   String getDescription() {
     switch (currentIndex) {
       case 0:
-        return "L'autorisation de localisation est indispensable pour calculer avec précision le coût et la distance de votre trajet, en se basant sur les points de départ et d'arrivée du client.";
+        return "L'autorisation de Position est indispensable pour calculer avec précision le coût et la distance de votre trajet, en se basant sur les points de départ et d'arrivée du client.";
       case 1:
         return "L'autorisation Bluetooth est requise pour établir une connexion entre le smartphone du client et le chauffeur ou le conducteur de zem.";
       case 2:
         return "L'autorisation de Cast est nécessaire pour diffuser les informations tarifaires de base, le coût par kilomètre, ainsi que le prix et la distance parcourue pendant le trajet entre le client et le chauffeur ou le conducteur de zem.";
       default:
         return "Autre";
+    }
+  }
+
+  String getImage() {
+    switch (currentIndex) {
+      case 0:
+        return Helper.onboard0;
+      case 1:
+        return Helper.onboard1;
+      case 2:
+        return Helper.onboard2;
+      default:
+        return "";
     }
   }
 }

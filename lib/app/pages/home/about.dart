@@ -4,7 +4,7 @@ import 'package:kokom/helper/helper.dart';
 import 'package:kokom/utils.dart';
 
 class About extends StatelessWidget {
-  const About({ Key? key});
+  const About({Key? key});
 
   @override
   Widget build(BuildContext context) {
