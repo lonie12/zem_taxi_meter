@@ -12,8 +12,11 @@ import 'package:nearby_connections/nearby_connections.dart';
 // import 'package:wakelock_plus/wakelock_plus.dart';
 
 class KokomSender extends StatefulWidget {
-  const KokomSender(
-      {super.key, required this.baseprice, required this.kmprice});
+  const KokomSender({
+    super.key,
+    required this.baseprice,
+    required this.kmprice,
+  });
   final int baseprice;
   final int kmprice;
   @override
@@ -25,12 +28,12 @@ class _KokomSenderState extends State<KokomSender> {
   StreamSubscription<LocationData>? locationSubscription;
 
   var userHasRide = false;
-  var streamConnected = false;
   var courseStarted = false;
-  var rideDistance = 0;
+  var streamConnected = false;
+  List<double> originLocation = [0.0, 0.0];
+  var rideDistance = 0.0;
   var rideBalance = 0;
   var basePrice = 50;
-  List<double> originLocation = [0.0, 0.0];
 
   final String userName = Random().nextInt(10000).toString();
   final Strategy strategy = Strategy.P2P_STAR;
@@ -60,32 +63,6 @@ class _KokomSenderState extends State<KokomSender> {
     await listenLocation();
   }
 
-  // Future<dynamic> listenLocation() async {
-  //   locationSubscription = location.onLocationChanged.handleError((onError) {
-  //     locationSubscription?.cancel();
-  //   }).listen((LocationData currentlocation) async {
-  //     // debugPrint(currentlocation.toString());
-  //     rideDistance = rideDistance + 1;
-  //     var newBalance = basePrice * rideDistance;
-  //     rideBalance = newBalance;
-  //     setState(() {});
-  //     endpointMap.forEach((key, value) {
-  //       // String a = Random().nextInt(100).toString();
-  //       // showSnackbar("Sending $a to ${value.endpointName}, id: $key");
-  //       // rideDistance = rideDistance + 1;
-  //       // var newBalance = basePrice * rideDistance;
-  //       // rideBalance = newBalance;
-  //       // setState(() {});
-  //       Nearby().sendBytesPayload(
-  //         key,
-  //         Uint8List.fromList(
-  //           "$rideBalance|$rideDistance".codeUnits,
-  //         ),
-  //       );
-  //     });
-  //   });
-  // }
-
   Future<dynamic> listenLocation() async {
     locationSubscription = location.onLocationChanged.handleError((onError) {
       locationSubscription?.cancel();
@@ -100,9 +77,7 @@ class _KokomSenderState extends State<KokomSender> {
       );
 
       // Convertir la distance en kilomètres
-      int distanceInKm = (distanceInMeters / 1000).round();
-
-      debugPrint("Distance en km :$distanceInKm");
+      double distanceInKm = distanceInMeters / 1000;
 
       if (distanceInKm >= 1) {
         originLocation = [];
@@ -114,17 +89,11 @@ class _KokomSenderState extends State<KokomSender> {
         ];
 
         // Mettre à jour le solde et l'interface utilisateur
-        var newBalance = basePrice * rideDistance;
+        var newBalance = basePrice * rideDistance.round();
         rideBalance = newBalance;
         setState(() {});
 
         endpointMap.forEach((key, value) {
-          // String a = Random().nextInt(100).toString();
-          // showSnackbar("Sending $a to ${value.endpointName}, id: $key");
-          // rideDistance = rideDistance + 1;
-          // var newBalance = basePrice * rideDistance;
-          // rideBalance = newBalance;
-          // setState(() {});
           Nearby().sendBytesPayload(
             key,
             Uint8List.fromList(
@@ -141,8 +110,8 @@ class _KokomSenderState extends State<KokomSender> {
     originLocation = [];
     originLocation = [currentLocation.latitude, currentLocation.longitude];
     // rideBalance = basePrice;
-    await Nearby().stopAdvertising();
-    await customStartAdvertising();
+    await Nearby().stopDiscovery();
+    await customStartDiscovery();
     courseStarted = true;
     setState(() {});
     begin();
@@ -196,7 +165,7 @@ class _KokomSenderState extends State<KokomSender> {
                         width: 150,
                         height: 150,
                         decoration: BoxDecoration(
-                          border: Border.all(width: 5, color: Helper.warning),
+                          border: Border.all(width: 5, color: Helper.primary),
                           borderRadius: BorderRadius.circular(100),
                           color: Colors.grey.shade300,
                         ),
@@ -253,47 +222,56 @@ class _KokomSenderState extends State<KokomSender> {
                   ),
                 ),
               ),
-              // Container(
-              //   width: 120,
-              //   height: 120,
-              //   decoration: BoxDecoration(
-              //     border: Border.all(width: 100, color: Helper.primary),
-              //     borderRa
-              //   ),
-              //   padding: const EdgeInsets.all(10),
-              // )
-              Container(
-                  width: Get.width,
-                  padding: const EdgeInsets.all(12),
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.resolveWith(
-                          (states) => Helper.primary),
-                      padding: MaterialStateProperty.all(
-                        const EdgeInsets.symmetric(vertical: 11),
+              !courseStarted
+                  ? Container(
+                      width: 80,
+                      height: 80,
+                      margin: const EdgeInsets.symmetric(vertical: 20),
+                      decoration: BoxDecoration(
+                        border: Border.all(width: 5, color: Helper.warning),
+                        borderRadius: BorderRadius.circular(130),
                       ),
-                    ),
-                    child: Text(
-                      !courseStarted
-                          ? "Commencer la course !"
-                          : "Terminer la course !",
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge!
-                          .copyWith(color: Colors.white, fontSize: 16),
-                    ),
-                    onPressed: () {
-                      courseStarted ? endCourse() : startCourse();
-                    },
-                    //   // onPressed: () => customStartAdvertising(),
-                    //   child: Text(!courseStarted ? "Commencer" : "Terminer"),
-                  )
-                  // ElevatedButton(
-                  //   onPressed: () => courseStarted ? endCourse() : startCourse(),
-                  //   // onPressed: () => customStartAdvertising(),
-                  //   child: Text(!courseStarted ? "Commencer" : "Terminer"),
-                  // ),
-                  )
+                      padding: const EdgeInsets.all(2),
+                      child: InkWell(
+                        onTap: () => startCourse(),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Helper.primary,
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Center(
+                            child: Text(
+                              "Go",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(fontSize: 22, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  : Container(
+                      width: Get.width,
+                      padding: const EdgeInsets.all(12),
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.resolveWith(
+                              (states) => Helper.danger),
+                          padding: MaterialStateProperty.all(
+                            const EdgeInsets.symmetric(vertical: 11),
+                          ),
+                        ),
+                        child: Text(
+                          "Terminer la course !",
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge!
+                              .copyWith(color: Colors.white, fontSize: 16),
+                        ),
+                        onPressed: () => endCourse(),
+                      ),
+                    )
             ],
           ),
         ),
@@ -301,31 +279,46 @@ class _KokomSenderState extends State<KokomSender> {
     );
   }
 
-  Future<void> customStartAdvertising() async {
+  Future<void> customStartDiscovery() async {
     try {
-      bool a = await Nearby().startAdvertising(
+      bool a = await Nearby().startDiscovery(
         userName,
         strategy,
-        onConnectionInitiated: onConnectionInit,
-        onConnectionResult: (id, status) {
-          debugPrint("Driver connected");
-          streamConnected = true;
-          debugPrint(status.toString());
-          showSnackbar(context, "Client Connecté");
-          setState(() {});
-        },
-        onDisconnected: (id) {
-          debugPrint(
-            "Driver Disconnected: ${endpointMap[id]!.endpointName}, id $id",
-          );
-          setState(() {
-            endpointMap.remove(id);
+        onEndpointFound: (id, name, serviceId) {
+          Future.delayed(const Duration(seconds: 3), () {
+            Nearby().requestConnection(
+              userName,
+              id,
+              onConnectionInitiated: (id, info) {
+                onConnectionInit(id, info);
+              },
+              onConnectionResult: (id, status) {
+                debugPrint("Driver connected");
+                streamConnected = true;
+                debugPrint(status.toString());
+                showSnackbar(context, "Client Connecté");
+                setState(() {});
+              },
+              onDisconnected: (id) {
+                setState(() {
+                  endpointMap.remove(id);
+                });
+                debugPrint(
+                  "Disconnected from: ${endpointMap[id]!.endpointName}, id $id",
+                );
+              },
+            );
           });
         },
+        onEndpointLost: (id) {
+          debugPrint(
+            "Lost discovered Endpoint: ${endpointMap[id]?.endpointName}, id $id",
+          );
+        },
       );
-      debugPrint("Driver ADVERTISING: $a");
-    } catch (exception) {
-      debugPrint(exception.toString());
+      debugPrint("DISCOVERING: $a");
+    } catch (e) {
+      debugPrint(e.toString());
     }
   }
 
@@ -348,7 +341,7 @@ class _KokomSenderState extends State<KokomSender> {
               const Text(
                 "Demande de connexion",
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 16,
                   color: Color(0xFF24292E),
                   fontFamily: "Poppins",
                 ),
@@ -359,7 +352,7 @@ class _KokomSenderState extends State<KokomSender> {
                     id,
                     onPayLoadRecieved: (endid, payload) async {
                       if (payload.type == PayloadType.BYTES) {
-                        String str = String.fromCharCodes(payload.bytes!);
+                        // String str = String.fromCharCodes(payload.bytes!);
                         // showSnackbar("$endid: $str");
 
                         // if (str.contains(':')) {

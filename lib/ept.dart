@@ -7,12 +7,10 @@ import 'package:kokom/app/pages/driver/defineprice.dart';
 import 'package:kokom/app/widgets/mybutton.dart';
 import 'package:kokom/helper/helper.dart';
 import 'package:kokom/receiver.dart';
-import 'package:kokom/sender.dart';
 import 'package:location/location.dart' as loc;
 import 'package:location/location.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:nearby_connections/nearby_connections.dart';
 import 'package:permission_handler/permission_handler.dart';
 // import 'package:wakelock_plus/wakelock_plus.dart';
@@ -382,7 +380,7 @@ class _MyBodyState extends State<Body> {
                 color: Helper.primary,
                 size: 32.0,
                 width: 200.0,
-                onClick: () => Get.to(DefinePrice()),
+                onClick: () => Get.to(const DefinePrice()),
               ),
             ),
             const SizedBox(width: 20),

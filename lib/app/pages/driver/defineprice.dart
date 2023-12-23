@@ -4,8 +4,8 @@ import 'package:kokom/app/widgets/appbar.dart';
 import 'package:kokom/app/widgets/input.dart';
 import 'package:kokom/app/widgets/mybutton.dart';
 import 'package:kokom/helper/helper.dart';
+import 'package:kokom/helper/localstorage.dart';
 import 'package:kokom/sender.dart';
-import 'package:localstorage/localstorage.dart';
 
 class DefinePrice extends StatefulWidget {
   const DefinePrice({super.key});
@@ -18,29 +18,13 @@ class _DefinePriceState extends State<DefinePrice> {
   final TextEditingController basePriceController = TextEditingController();
 
   final TextEditingController kmPriceController = TextEditingController();
-  final LocalStorage storage = LocalStorage('my_data');
+
+  LocalStorageManager localStorageManager = LocalStorageManager();
+
   @override
   void initState() {
     super.initState();
-    _loadData();
-  }
-
-  void _saveData() {
-    final Map<String, dynamic> data = {
-      'basePrice': int.parse(basePriceController.text),
-      'kmPrice': int.parse(kmPriceController.text),
-    };
-    storage.setItem('my_data', data);
-  }
-
-  void _loadData() {
-    final dynamic savedData = storage.getItem('my_data');
-    if (savedData != null) {
-      setState(() {
-        basePriceController.text = savedData['basePrice'].toString();
-        kmPriceController.text = savedData['kmPrice'].toString();
-      });
-    }
+    localStorageManager.getPrices(basePriceController.text, kmPriceController);
   }
 
   @override
@@ -95,7 +79,10 @@ class _DefinePriceState extends State<DefinePrice> {
                           .copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 5),
-                    Textarea("Entre votre tarif de base", "title",
+                    Textarea(
+                        "Entre votre tarif de base",
+                        "title",
+                        type: TextInputType.number,
                         basePriceController),
                     const SizedBox(height: 20),
                     Text(
@@ -106,7 +93,10 @@ class _DefinePriceState extends State<DefinePrice> {
                           .copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 5),
-                    Textarea("Entrer le prix par kilomètre", "title",
+                    Textarea(
+                        "Entrer le prix par kilomètre",
+                        "title",
+                        type: TextInputType.number,
                         kmPriceController),
                     const SizedBox(height: 20),
                     const SizedBox(height: 20),
@@ -121,7 +111,7 @@ class _DefinePriceState extends State<DefinePrice> {
                 color: Helper.primary,
                 size: 32.0,
                 width: 200.0,
-                onClick: () {
+                onClick: () async {
                   if (basePriceController.text.isEmpty ||
                       kmPriceController.text.isEmpty) {
                     Get.snackbar(
@@ -133,7 +123,7 @@ class _DefinePriceState extends State<DefinePrice> {
                   } else {
                     final int basePrice = int.parse(basePriceController.text);
                     final int kmPrice = int.parse(kmPriceController.text);
-                    _saveData();
+                    await localStorageManager.savePrices(basePrice, kmPrice);
                     Get.to(KokomSender(
                       baseprice: basePrice,
                       kmprice: kmPrice,

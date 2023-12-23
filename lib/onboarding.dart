@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kokom/ept.dart';
 import 'package:kokom/helper/helper.dart';
+import 'package:kokom/helper/localstorage.dart';
 import 'package:location/location.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:localstorage/localstorage.dart';
 
 class OnBoarding extends StatefulWidget {
   const OnBoarding({super.key});
@@ -171,14 +173,21 @@ class _OnBoardingState extends State<OnBoarding> {
         goToNexPage();
         break;
       case 2:
-        // var nearbyWifiPermission = await Permission.nearbyWifiDevices.isGranted;
+        var isNearbyWifiOptional =
+            await Permission.nearbyWifiDevices.isProvisional;
+        if (!isNearbyWifiOptional) {
+        } else {
+          var nearbyWifiDevicesPermission =
+              await Permission.nearbyWifiDevices.isGranted;
+          if (!nearbyWifiDevicesPermission) {
+            return await Permission.nearbyWifiDevices.request();
+          }
+        }
         var locationServiceEnabled = await Location.instance.serviceEnabled();
-        // if (!nearbyWifiPermission) {
-        //   return await Permission.nearbyWifiDevices.request();
-        // }
         if (!locationServiceEnabled) {
           return await Location.instance.requestService();
         }
+        savePermission();
         Get.offAll(const Body());
         break;
       default:
@@ -206,5 +215,16 @@ class _OnBoardingState extends State<OnBoarding> {
             : Theme.of(context).primaryColor,
       ),
     );
+  }
+
+  Future<void> savePermission() async {
+    LocalStorageManager localStorageManager = LocalStorageManager();
+
+    await localStorageManager.saveEnablePermissions('permission', true);
+
+    bool? permission =
+        await localStorageManager.getEnablePermissions('permission');
+
+    print('Permission saved: $permission');
   }
 }
