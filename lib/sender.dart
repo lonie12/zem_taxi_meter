@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart' as Geo;
 import 'package:get/get.dart';
 import 'package:kokom/helper/helper.dart';
+import 'package:kokom/home.dart';
 import 'package:kokom/utils.dart';
 import 'package:location/location.dart';
 import 'package:nearby_connections/nearby_connections.dart';
@@ -139,7 +140,7 @@ class _KokomSenderState extends State<KokomSender> {
                 child: InkWell(
                   onTap: () async {
                     await endCourse();
-                    Get.back();
+                    Get.offAll(const Home());
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
@@ -264,6 +265,44 @@ class _KokomSenderState extends State<KokomSender> {
                                     fontWeight: FontWeight.bold,
                                     color: Helper.primary,
                                   ),
+                            )
+                          : const SizedBox(),
+                      startedValue == "not"
+                          ? Text(
+                              "Prix de base: ${widget.baseprice} F",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Helper.primary,
+                                  ),
+                            )
+                          : const SizedBox(),
+                      startedValue == "not"
+                          ? Text(
+                              "Prix par Km: ${widget.kmprice} F",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Helper.primary,
+                                  ),
+                            )
+                          : const SizedBox(),
+                      const SizedBox(height: 12),
+                      startedValue == "not"
+                          ? ElevatedButton(
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.resolveWith(
+                                        (states) => Helper.otherPrimaryColor),
+                              ),
+                              onPressed: () => {},
+                              child: const Text("Modifier"),
                             )
                           : const SizedBox(),
                     ],
@@ -394,7 +433,7 @@ class _KokomSenderState extends State<KokomSender> {
           );
         },
       );
-      debugPrint("DISCOVERING: $a");
+      debugPrint("DRIVER DISCOVERING: $a");
     } catch (e) {
       debugPrint(e.toString());
     }

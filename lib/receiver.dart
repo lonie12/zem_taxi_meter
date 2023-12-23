@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:kokom/app/widgets/mybutton.dart';
 import 'package:kokom/helper/helper.dart';
 import 'package:nearby_connections/nearby_connections.dart';
@@ -29,7 +30,8 @@ class _KokomReceiverState extends State<KokomReceiver> {
 
   @override
   void dispose() {
-    Nearby().stopDiscovery();
+    Nearby().stopAdvertising();
+    Nearby().stopAllEndpoints();
     super.dispose();
   }
 
@@ -39,59 +41,132 @@ class _KokomReceiverState extends State<KokomReceiver> {
       body: SafeArea(
         child: Column(
           children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                streamConnected
+                    ? Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          padding: const EdgeInsets.only(top: 12, left: 12),
+                          child: Row(
+                            children: [
+                              Container(
+                                height: 20,
+                                width: 20,
+                                decoration: BoxDecoration(
+                                  color: Helper.success,
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                "Connecté",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(
+                                        fontSize: 18,
+                                        color: Helper.primary,
+                                        fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : const SizedBox(),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: InkWell(
+                    onTap: () async {
+                      Get.back();
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 12,
+                      ),
+                      child: Text(
+                        "Quitter",
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                            fontSize: 16,
+                            color: Helper.danger,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
             Expanded(
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    streamConnected
-                        ? Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                height: 12,
-                                width: 12,
-                                decoration:
-                                    const BoxDecoration(color: Colors.green),
-                              ),
-                              const SizedBox(width: 6),
-                              const Text("Connecté")
-                            ],
-                          )
-                        : const SizedBox(),
-                    const SizedBox(height: 12),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
-                          width: 100,
-                          height: 100,
+                          width: 150,
+                          height: 150,
                           decoration: BoxDecoration(
-                            border: Border.all(width: 1),
+                            border: Border.all(width: 5, color: Helper.primary),
                             borderRadius: BorderRadius.circular(100),
+                            color: Colors.grey.shade300,
                           ),
                           child: Center(
-                            child: Text(
-                              streamData[0],
-                              style: const TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF24292E),
-                              ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  streamData.first,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge!
+                                      .copyWith(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                        color: const Color(0xFF24292E),
+                                      ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  "FCFA",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge!
+                                      .copyWith(
+                                        fontSize: 15,
+                                        color: const Color(0xFF24292E)
+                                            .withOpacity(0.8),
+                                      ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
                         const SizedBox(height: 15),
                         Text(
-                          "Distance parcourure:  ${streamData[1]}km",
-                          style: const TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF24292E),
-                          ),
-                        )
+                          "Distance parcourue",
+                          style:
+                              Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color(0xFF24292E),
+                                  ),
+                        ),
+                        Text(
+                          "${streamData.last} km",
+                          style:
+                              Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color(0xFF24292E),
+                                  ),
+                        ),
                       ],
                     ),
                   ],
@@ -100,15 +175,26 @@ class _KokomReceiverState extends State<KokomReceiver> {
             ),
             Container(
               padding: const EdgeInsets.all(12),
-              child: MyButton(
-                title: "Connecter",
-                color: Helper.blue,
-                size: 32.0,
-                width: 200.0,
-                onClick: () async {
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.resolveWith(
+                      (states) => Helper.warning),
+                  padding: MaterialStateProperty.all(
+                    const EdgeInsets.symmetric(vertical: 11, horizontal: 15),
+                  ),
+                ),
+                onPressed: () async {
+                  await Nearby().stopAllEndpoints();
                   await Nearby().stopAdvertising();
                   customStartAdvertising();
                 },
+                child: Text(
+                  "Connecter",
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge!
+                      .copyWith(color: Colors.white, fontSize: 16),
+                ),
               ),
             )
           ],
@@ -116,47 +202,6 @@ class _KokomReceiverState extends State<KokomReceiver> {
       ),
     );
   }
-
-  // void customStartDiscovery() async {
-  //   try {
-  //     bool a = await Nearby().startDiscovery(
-  //       userName,
-  //       strategy,
-  //       onEndpointFound: (id, name, serviceId) {
-  //         Future.delayed(const Duration(seconds: 3), () {
-  //           Nearby().requestConnection(
-  //             userName,
-  //             id,
-  //             onConnectionInitiated: (id, info) {
-  //               onConnectionInit(id, info);
-  //             },
-  //             onConnectionResult: (id, status) {
-  //               streamConnected = true;
-  //               debugPrint(status.toString());
-  //               setState(() {});
-  //             },
-  //             onDisconnected: (id) {
-  //               setState(() {
-  //                 endpointMap.remove(id);
-  //               });
-  //               debugPrint(
-  //                 "Disconnected from: ${endpointMap[id]!.endpointName}, id $id",
-  //               );
-  //             },
-  //           );
-  //         });
-  //       },
-  //       onEndpointLost: (id) {
-  //         debugPrint(
-  //           "Lost discovered Endpoint: ${endpointMap[id]?.endpointName}, id $id",
-  //         );
-  //       },
-  //     );
-  //     debugPrint("DISCOVERING: $a");
-  //   } catch (e) {
-  //     debugPrint(e.toString());
-  //   }
-  // }
 
   Future<void> customStartAdvertising() async {
     try {
@@ -178,7 +223,7 @@ class _KokomReceiverState extends State<KokomReceiver> {
           });
         },
       );
-      debugPrint("Driver ADVERTISING: $a");
+      debugPrint("Client ADVERTISING: $a");
     } catch (exception) {
       debugPrint(exception.toString());
     }
