@@ -24,6 +24,7 @@ dependencies:
   carbon_icons: ^0.0.1+2
   localstorage: ^4.0.1+4
   url_launcher: ^6.2.2
+  share_plus: ^7.2.1
 
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1

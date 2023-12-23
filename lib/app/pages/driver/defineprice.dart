@@ -6,6 +6,7 @@ import 'package:kokom/app/widgets/mybutton.dart';
 import 'package:kokom/helper/helper.dart';
 import 'package:kokom/helper/localstorage.dart';
 import 'package:kokom/sender.dart';
+import 'package:kokom/utils.dart';
 
 class DefinePrice extends StatefulWidget {
   const DefinePrice({super.key});
@@ -24,12 +25,10 @@ class _DefinePriceState extends State<DefinePrice> {
   @override
   void initState() {
     super.initState();
-   
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -40,7 +39,7 @@ class _DefinePriceState extends State<DefinePrice> {
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Text(
-                "Entrez ci-dessous votre prix de base, et votre prix par km en le confirmant pour continuer.",
+                "Entrez ci-dessous votre prix de base, et votre prix par kilomètre pour continuer.",
                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                     fontSize: 14,
                     fontFamily: "Poppins",
@@ -80,9 +79,11 @@ class _DefinePriceState extends State<DefinePrice> {
                     ),
                     const SizedBox(height: 5),
                     Textarea(
-                        "Entre votre tarif de base",
+                        "Entrer votre tarif de base",
                         "title",
-                        type: TextInputType.number,
+                        type: const TextInputType.numberWithOptions(
+                          decimal: false,
+                        ),
                         basePriceController),
                     const SizedBox(height: 20),
                     Text(
@@ -96,7 +97,9 @@ class _DefinePriceState extends State<DefinePrice> {
                     Textarea(
                         "Entrer le prix par kilomètre",
                         "title",
-                        type: TextInputType.number,
+                        type: const TextInputType.numberWithOptions(
+                          decimal: false,
+                        ),
                         kmPriceController),
                     const SizedBox(height: 20),
                     const SizedBox(height: 20),
@@ -117,6 +120,14 @@ class _DefinePriceState extends State<DefinePrice> {
                     Get.snackbar(
                       'Error',
                       'Veillez définir vos tarifs',
+                      backgroundColor: Colors.red,
+                      colorText: Colors.white,
+                    );
+                  } else if (!isInteger(basePriceController.text) ||
+                      !isInteger(kmPriceController.text)) {
+                    Get.snackbar(
+                      'Error',
+                      'Veillez entrer des nombres entiers pour les tarifs',
                       backgroundColor: Colors.red,
                       colorText: Colors.white,
                     );
