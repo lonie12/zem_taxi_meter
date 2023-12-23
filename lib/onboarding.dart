@@ -171,11 +171,17 @@ class _OnBoardingState extends State<OnBoarding> {
         goToNexPage();
         break;
       case 2:
-        // var nearbyWifiPermission = await Permission.nearbyWifiDevices.isGranted;
+        var isNearbyWifiOptional =
+            await Permission.nearbyWifiDevices.isProvisional;
+        if (!isNearbyWifiOptional) {
+        } else {
+          var nearbyWifiDevicesPermission =
+              await Permission.nearbyWifiDevices.isGranted;
+          if (!nearbyWifiDevicesPermission) {
+            return await Permission.nearbyWifiDevices.request();
+          }
+        }
         var locationServiceEnabled = await Location.instance.serviceEnabled();
-        // if (!nearbyWifiPermission) {
-        //   return await Permission.nearbyWifiDevices.request();
-        // }
         if (!locationServiceEnabled) {
           return await Location.instance.requestService();
         }

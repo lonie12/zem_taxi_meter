@@ -1,7 +1,3 @@
-import 'dart:convert';
-
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalStorage {
@@ -47,87 +43,5 @@ class LocalStorage {
       localstorage.getBool("kokomFirstSeeing") ?? true;
   static set kokomFistSeeing(bool value) =>
       localstorage.setBool("kokomFirstSeeing", value);
-
-  // // Enregistrer localement les informations d'un utilisateur
-  // static saveUserInformations(User user) async {
-  //   token = user.token;
-  //   dtoken = user.devicetoken ?? "";
-  //   var encoded = json.encode(user);
-  //   await localstorage.setString("userData", encoded);
-  //   await LocalStorage.init();
-  //   return user = user;
-  // }
-
-  // User account to local
-  // static saveUserAccount(Account data) async {
-  //   var encoded = json.encode(data);
-  //   await localstorage.setString("userAccount", encoded);
-  //   await LocalStorage.init();
-  //   return account = data;
-  // }
-
-
-
-  // User just install the app
-  static isFirstUse() async {
-    firstUse = true;
-    await LocalStorage.init();
-  }
-
-  // User just install the app
-  static isKokomFirstSeeing() async {
-    kokomFistSeeing = true;
-    await LocalStorage.init();
-  }
-
-  //
-  static thisNotKokomFirstSeeing() async {
-    kokomFistSeeing = false;
-    await LocalStorage.init();
-  }
-
-  //
-  static thisNotFirstUse() async {
-    firstUse = false;
-    await LocalStorage.init();
-  }
-
-  // static getUserLocalInformations() {
-  //   var data = localstorage.getString("userData") ?? "[]";
-  //   var decode = json.decode(data);
-  //   return user = User.fromJson(decode);
-  // }
-
-  // // Enregistrer la commande de véhicule en cours
-  // static saveCurrentOrder(Ride order) async {
-  //   var encoded = json.encode(order);
-  //   await localstorage.setString("vOrdered", encoded);
-  //   await LocalStorage.init();
-  // }
-
-  // Récuperer la commande de véhicule enregistrer précedemment
-  // static Future<Ride> getCurrentOrder() async {
-  //   var data = localstorage.getString("vOrdered") ?? "[]";
-  //   var decode = json.decode(data);
-  //   return currentVehicleOrdered = Ride.fromJson(decode);
-  // }
-
-
-
-  // static Future setUserBet(userBet) async {
-  //   bet = userBet;
-  //   return await LocalStorage.init();
-  // }
-
-  // userIsLogged
-  // static userIsLogged() async {
-  //   logged = true;
-  //   return await LocalStorage.init();
-  // }
-
-
-
-
-
 
 }

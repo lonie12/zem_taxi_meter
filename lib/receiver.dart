@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:kokom/app/widgets/mybutton.dart';
 import 'package:kokom/helper/helper.dart';
 import 'package:nearby_connections/nearby_connections.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 // import 'package:wakelock_plus/wakelock_plus.dart';
 
 class KokomReceiver extends StatefulWidget {
@@ -22,8 +23,14 @@ class _KokomReceiverState extends State<KokomReceiver> {
 
   @override
   void initState() {
-    // WakelockPlus.enable();
+    WakelockPlus.enable();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    Nearby().stopDiscovery();
+    super.dispose();
   }
 
   @override
@@ -99,8 +106,8 @@ class _KokomReceiverState extends State<KokomReceiver> {
                 size: 32.0,
                 width: 200.0,
                 onClick: () async {
-                  await Nearby().stopDiscovery();
-                  customStartDiscovery();
+                  await Nearby().stopAdvertising();
+                  customStartAdvertising();
                 },
               ),
             )
@@ -110,46 +117,70 @@ class _KokomReceiverState extends State<KokomReceiver> {
     );
   }
 
-  void customStartDiscovery() async {
+  // void customStartDiscovery() async {
+  //   try {
+  //     bool a = await Nearby().startDiscovery(
+  //       userName,
+  //       strategy,
+  //       onEndpointFound: (id, name, serviceId) {
+  //         Future.delayed(const Duration(seconds: 3), () {
+  //           Nearby().requestConnection(
+  //             userName,
+  //             id,
+  //             onConnectionInitiated: (id, info) {
+  //               onConnectionInit(id, info);
+  //             },
+  //             onConnectionResult: (id, status) {
+  //               streamConnected = true;
+  //               debugPrint(status.toString());
+  //               setState(() {});
+  //             },
+  //             onDisconnected: (id) {
+  //               setState(() {
+  //                 endpointMap.remove(id);
+  //               });
+  //               debugPrint(
+  //                 "Disconnected from: ${endpointMap[id]!.endpointName}, id $id",
+  //               );
+  //             },
+  //           );
+  //         });
+  //       },
+  //       onEndpointLost: (id) {
+  //         debugPrint(
+  //           "Lost discovered Endpoint: ${endpointMap[id]?.endpointName}, id $id",
+  //         );
+  //       },
+  //     );
+  //     debugPrint("DISCOVERING: $a");
+  //   } catch (e) {
+  //     debugPrint(e.toString());
+  //   }
+  // }
+
+  Future<void> customStartAdvertising() async {
     try {
-      bool a = await Nearby().startDiscovery(
+      bool a = await Nearby().startAdvertising(
         userName,
         strategy,
-        onEndpointFound: (id, name, serviceId) {
-          // show sheet automatically to request connection
-          // print("Founded ===========");
-          Future.delayed(const Duration(seconds: 3), () {
-            Nearby().requestConnection(
-              userName,
-              id,
-              onConnectionInitiated: (id, info) {
-                onConnectionInit(id, info);
-              },
-              onConnectionResult: (id, status) {
-                streamConnected = true;
-                debugPrint(status.toString());
-                setState(() {});
-              },
-              onDisconnected: (id) {
-                setState(() {
-                  endpointMap.remove(id);
-                });
-                debugPrint(
-                  "Disconnected from: ${endpointMap[id]!.endpointName}, id $id",
-                );
-              },
-            );
+        onConnectionInitiated: onConnectionInit,
+        onConnectionResult: (id, status) {
+          streamConnected = true;
+          debugPrint(status.toString());
+          setState(() {});
+        },
+        onDisconnected: (id) {
+          debugPrint(
+            "Client Disconnected: ${endpointMap[id]!.endpointName}, id $id",
+          );
+          setState(() {
+            endpointMap.remove(id);
           });
         },
-        onEndpointLost: (id) {
-          debugPrint(
-            "Lost discovered Endpoint: ${endpointMap[id]?.endpointName}, id $id",
-          );
-        },
       );
-      debugPrint("DISCOVERING: $a");
-    } catch (e) {
-      debugPrint(e.toString());
+      debugPrint("Driver ADVERTISING: $a");
+    } catch (exception) {
+      debugPrint(exception.toString());
     }
   }
 
@@ -162,52 +193,17 @@ class _KokomReceiverState extends State<KokomReceiver> {
       onPayLoadRecieved: (endid, payload) async {
         if (payload.type == PayloadType.BYTES) {
           String str = String.fromCharCodes(payload.bytes!);
-          // showSnackbar(context, "str");
           streamData = [];
           streamData = str.split("|");
           setState(() {});
-
-          // if (str.contains(':')) {
-          //   // used for file payload as file payload is mapped as
-          //   // payloadId:filename
-          //   int payloadId = int.parse(str.split(':')[0]);
-          //   String fileName = (str.split(':')[1]);
-
-          //   if (map.containsKey(payloadId)) {
-          //     if (tempFileUri != null) {
-          //       moveFile(tempFileUri!, fileName);
-          //     } else {
-          //       showSnackbar("File doesn't exist");
-          //     }
-          //   } else {
-          //     //add to map if not already
-          //     map[payloadId] = fileName;
-          //   }
-          // }
-        } else if (payload.type == PayloadType.FILE) {
-          // showSnackbar("$endid: File transfer started");
-          // tempFileUri = payload.uri;
-        }
+        } else if (payload.type == PayloadType.FILE) {}
       },
       onPayloadTransferUpdate: (endid, payloadTransferUpdate) {
         if (payloadTransferUpdate.status == PayloadStatus.IN_PROGRESS) {
-          print(payloadTransferUpdate.bytesTransferred);
+          debugPrint(payloadTransferUpdate.bytesTransferred.toString());
         } else if (payloadTransferUpdate.status == PayloadStatus.FAILURE) {
-          print("failed");
-          // showSnackbar("$endid: FAILED to transfer file");
-        } else if (payloadTransferUpdate.status == PayloadStatus.SUCCESS) {
-          // showSnackbar(
-          //     "$endid success, total bytes = ${payloadTransferUpdate.totalBytes}");
-
-          // if (map.containsKey(payloadTransferUpdate.id)) {
-          //   //rename the file now
-          //   String name = map[payloadTransferUpdate.id]!;
-          //   moveFile(tempFileUri!, name);
-          // } else {
-          //   //bytes not received till yet
-          //   map[payloadTransferUpdate.id] = "";
-          // }
-        }
+          debugPrint("failed");
+        } else if (payloadTransferUpdate.status == PayloadStatus.SUCCESS) {}
       },
     );
   }
