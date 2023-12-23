@@ -51,7 +51,7 @@ class Helper {
   static const Color secondaryColor5LightTheme = Color(0xFFF8F8F8);
 
   static String googleApiKey = "AIzaSyBdE4MKTM_Sy0_oL05KpnY8sf8LAR3_M_U";
-  static String appicon = "assets/images/icon.png";
+  static String appicon = "assets/images/vooom.png";
 
   /// Navigation buttom icons
   static String bactivity = "assets/images/b-activity.svg";

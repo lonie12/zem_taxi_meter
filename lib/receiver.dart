@@ -2,11 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:kokom/app/widgets/mybutton.dart';
-import 'package:kokom/ept.dart';
 import 'package:kokom/helper/helper.dart';
-import 'package:kokom/utils.dart';
 import 'package:nearby_connections/nearby_connections.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 // import 'package:wakelock_plus/wakelock_plus.dart';
@@ -39,105 +36,110 @@ class _KokomReceiverState extends State<KokomReceiver> {
 
   @override
   Widget build(context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            Align(
-              alignment: Alignment.centerRight,
-              child: InkWell(
-                onTap: () async {
-                  // await endCourse();
-                  Get.back();
-                },
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                  child: Text(
-                    "Quitter",
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        fontSize: 16,
-                        color: Helper.danger,
-                        fontWeight: FontWeight.bold),
+    return WillPopScope(
+      onWillPop: () {
+        return Future.value(false);
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: Column(
+            children: [
+              Align(
+                alignment: Alignment.centerRight,
+                child: InkWell(
+                  onTap: () async {
+                    // await endCourse();
+                    Get.back();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 12),
+                    child: Text(
+                      "Quitter",
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          fontSize: 16,
+                          color: Helper.danger,
+                          fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
               ),
-            ),
-            Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    streamConnected
-                        ? Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                height: 12,
-                                width: 12,
-                                decoration:
-                                    const BoxDecoration(color: Colors.green),
-                              ),
-                              const SizedBox(width: 6),
-                              const Text("Connecté")
-                            ],
-                          )
-                        : const SizedBox(),
-                    const SizedBox(height: 12),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            border: Border.all(width: 1),
-                            borderRadius: BorderRadius.circular(100),
-                          ),
-                          child: Center(
-                            child: Text(
-                              "$streamData[0]",
-                              style: const TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF24292E),
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      streamConnected
+                          ? Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  height: 12,
+                                  width: 12,
+                                  decoration:
+                                      const BoxDecoration(color: Colors.green),
+                                ),
+                                const SizedBox(width: 6),
+                                const Text("Connecté")
+                              ],
+                            )
+                          : const SizedBox(),
+                      const SizedBox(height: 12),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              border: Border.all(width: 1),
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                            child: Center(
+                              child: Text(
+                                "$streamData[0]",
+                                style: const TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF24292E),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 15),
-                        Text(
-                          "Distance parcourure: $streamData[1] km",
-                          style: const TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF24292E),
-                          ),
-                        )
-                      ],
-                    ),
-                  ],
+                          const SizedBox(height: 15),
+                          Text(
+                            "Distance parcourure: $streamData[1] km",
+                            style: const TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF24292E),
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            !streamConnected
-                ? Container(
-                    padding: const EdgeInsets.all(12),
-                    child: MyButton(
-                      title: "Connecter",
-                      color: Helper.blue,
-                      size: 32.0,
-                      width: 200.0,
-                      onClick: () async {
-                        await Nearby().stopAdvertising();
-                        customStartAdvertising();
-                      },
-                    ),
-                  )
-                : const SizedBox()
-          ],
+              !streamConnected
+                  ? Container(
+                      padding: const EdgeInsets.all(12),
+                      child: MyButton(
+                        title: "Connecter",
+                        color: Helper.blue,
+                        size: 32.0,
+                        width: 200.0,
+                        onClick: () async {
+                          await Nearby().stopAdvertising();
+                          customStartAdvertising();
+                        },
+                      ),
+                    )
+                  : const SizedBox()
+            ],
+          ),
         ),
       ),
     );

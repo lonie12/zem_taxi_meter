@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:kokom/ept.dart';
 import 'package:kokom/helper/helper.dart';
 import 'package:kokom/helper/localstorage.dart';
+import 'package:kokom/home.dart';
 import 'package:location/location.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:localstorage/localstorage.dart';
@@ -188,7 +189,7 @@ class _OnBoardingState extends State<OnBoarding> {
           return await Location.instance.requestService();
         }
         savePermission();
-        Get.offAll(const Body());
+        Get.offAll(const Home());
         break;
       default:
         return false;
@@ -219,12 +220,6 @@ class _OnBoardingState extends State<OnBoarding> {
 
   Future<void> savePermission() async {
     LocalStorageManager localStorageManager = LocalStorageManager();
-
     await localStorageManager.saveEnablePermissions('permission', true);
-
-    bool? permission =
-        await localStorageManager.getEnablePermissions('permission');
-
-    print('Permission saved: $permission');
   }
 }

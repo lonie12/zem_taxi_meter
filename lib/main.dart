@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kokom/ept.dart';
 import 'package:kokom/helper/localstorage.dart';
+import 'package:kokom/home.dart';
 import 'package:kokom/onboarding.dart';
 import 'package:kokom/theme.dart';
 
@@ -24,7 +25,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       theme: appTheme,
-      home: permission ? const Body() : const OnBoarding(),
+      home: permission ? const Home() : const OnBoarding(),
       debugShowCheckedModeBanner: false,
     );
   }

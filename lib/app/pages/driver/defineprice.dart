@@ -24,12 +24,12 @@ class _DefinePriceState extends State<DefinePrice> {
   @override
   void initState() {
     super.initState();
-    localStorageManager.getPrices(basePriceController.text, kmPriceController);
+   
   }
 
   @override
   Widget build(BuildContext context) {
-    print(basePriceController.text);
+
     return Scaffold(
       body: SafeArea(
         child: Column(
