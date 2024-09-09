@@ -6,30 +6,29 @@
 // import 'package:kokom/helper/helper.dart';
 // import 'package:kokom/helper/localstorage.dart';
 // import 'package:kokom/sender.dart';
+// import 'package:kokom/utils.dart';
 
-// class DefinePrice extends StatefulWidget {
-//   const DefinePrice({super.key});
+// // class DefinePrice extends StatefulWidget {
+// //   const DefinePrice({super.key});
 
-//   @override
-//   State<DefinePrice> createState() => _DefinePriceState();
-// }
+// //   @override
+// //   State<DefinePrice> createState() => _DefinePriceState();
+// // }
 
-// class _DefinePriceState extends State<DefinePrice> {
-//   final TextEditingController basePriceController = TextEditingController();
+// // class _DefinePriceState extends State<DefinePrice> {
+// //   final TextEditingController basePriceController = TextEditingController();
 
-//   final TextEditingController kmPriceController = TextEditingController();
+// //   final TextEditingController kmPriceController = TextEditingController();
 
-//   LocalStorageManager localStorageManager = LocalStorageManager();
+// //   LocalStorageManager localStorageManager = LocalStorageManager();
 
 //   @override
 //   void initState() {
 //     super.initState();
-   
 //   }
 
 //   @override
 //   Widget build(BuildContext context) {
-
 //     return Scaffold(
 //       body: SafeArea(
 //         child: Column(
@@ -40,7 +39,7 @@
 //               alignment: Alignment.centerLeft,
 //               padding: const EdgeInsets.symmetric(horizontal: 12),
 //               child: Text(
-//                 "Entrez ci-dessous votre prix de base, et votre prix par km en le confirmant pour continuer.",
+//                 "Entrez ci-dessous votre prix de base, et votre prix par kilomètre pour continuer.",
 //                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(
 //                     fontSize: 14,
 //                     fontFamily: "Poppins",
@@ -80,9 +79,11 @@
 //                     ),
 //                     const SizedBox(height: 5),
 //                     Textarea(
-//                         "Entre votre tarif de base",
+//                         "Entrer votre tarif de base",
 //                         "title",
-//                         type: TextInputType.number,
+//                         type: const TextInputType.numberWithOptions(
+//                           decimal: false,
+//                         ),
 //                         basePriceController),
 //                     const SizedBox(height: 20),
 //                     Text(
@@ -96,7 +97,9 @@
 //                     Textarea(
 //                         "Entrer le prix par kilomètre",
 //                         "title",
-//                         type: TextInputType.number,
+//                         type: const TextInputType.numberWithOptions(
+//                           decimal: false,
+//                         ),
 //                         kmPriceController),
 //                     const SizedBox(height: 20),
 //                     const SizedBox(height: 20),
@@ -120,6 +123,14 @@
 //                       backgroundColor: Colors.red,
 //                       colorText: Colors.white,
 //                     );
+//                   } else if (!isInteger(basePriceController.text) ||
+//                       !isInteger(kmPriceController.text)) {
+//                     Get.snackbar(
+//                       'Error',
+//                       'Veillez entrer des nombres entiers pour les tarifs',
+//                       backgroundColor: Colors.red,
+//                       colorText: Colors.white,
+//                     );
 //                   } else {
 //                     final int basePrice = int.parse(basePriceController.text);
 //                     final int kmPrice = int.parse(kmPriceController.text);
@@ -139,7 +150,7 @@
 //     );
 //   }
 
-//   Future<bool> onWillPop() {
-//     return Future.value(false);
-//   }
-// }
+// //   Future<bool> onWillPop() {
+// //     return Future.value(false);
+// //   }
+// // }

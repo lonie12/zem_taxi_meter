@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:kokom/app/widgets/appbar.dart';
 import 'package:kokom/helper/helper.dart';
 import 'package:kokom/helper/utils.dart';
+import 'package:share_plus/share_plus.dart';
 
 class About extends StatelessWidget {
   const About({super.key});
-
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +49,9 @@ class About extends StatelessWidget {
                   height: 20,
                 ),
                 InkWell(
-                  onTap: () => launchBrowser(""),
+                  onTap: () => Share.share(
+                      "Bon, qu'est-ce que tu attends pour télécharger l'application Uber Africain et la partager avec tes potes, ainsi qu'avec les zem et les chauffeurs ? C'est une application rapide et simple que tu peux utiliser pour suivre une course avec un zem ou un chauffeur, et tout cela gratuitement hein. On se capte sur le Play Store non ? : ${Helper.playstoreurl}",
+                      subject: 'Vooom'),
                   child: Column(
                     children: [
                       Padding(
@@ -71,7 +73,7 @@ class About extends StatelessWidget {
                               width: 10,
                             ),
                             Text(
-                              "Partager avec des potes",
+                              "Share with friends",
                               textAlign: TextAlign.center,
                               style: Theme.of(context)
                                   .textTheme
@@ -114,7 +116,7 @@ class About extends StatelessWidget {
                               width: 10,
                             ),
                             Text(
-                              "Proposer des modifications",
+                              "Make proposals",
                               textAlign: TextAlign.center,
                               style: Theme.of(context)
                                   .textTheme
@@ -135,7 +137,7 @@ class About extends StatelessWidget {
                   ),
                 ),
                 InkWell(
-                  onTap: () => launchBrowser("https://wa.me/+22890364358"),
+                  onTap: () => launchBrowser("https://wa.me/+22890410155"),
                   child: Column(
                     children: [
                       Padding(
@@ -157,7 +159,7 @@ class About extends StatelessWidget {
                               width: 10,
                             ),
                             Text(
-                              "Contactez le développeur",
+                              "Call developer",
                               textAlign: TextAlign.center,
                               style: Theme.of(context)
                                   .textTheme
@@ -178,7 +180,7 @@ class About extends StatelessWidget {
                   ),
                 ),
                 InkWell(
-                  onTap: () => launchBrowser(""),
+                  onTap: () => launchBrowser(Helper.playstoreurl),
                   child: Column(
                     children: [
                       Padding(
@@ -200,7 +202,7 @@ class About extends StatelessWidget {
                               width: 10,
                             ),
                             Text(
-                              "Donner nous 5 étoiles sur play store",
+                              "Give us five star on Play Store",
                               textAlign: TextAlign.center,
                               style: Theme.of(context)
                                   .textTheme
@@ -231,7 +233,7 @@ class About extends StatelessWidget {
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(15.0),
         child: Text(
-          "Made with ❤️ in Togo 🇹🇬\n© Tous droits réservés, Reskode_ ${getYear()}\n",
+          "Made with ❤️ in Togo 🇹🇬\n© Copyright, Reskode_ ${getYear()}\n",
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                 color: Helper.greyTextColor,

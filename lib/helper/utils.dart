@@ -41,3 +41,12 @@ int getYear() {
   DateTime now = DateTime.now();
   return now.year;
 }
+
+bool isInteger(String value) {
+   try {
+      int.parse(value);
+      return true;
+   } catch (e) {
+      return false;
+   }
+}

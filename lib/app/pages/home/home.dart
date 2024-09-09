@@ -16,7 +16,13 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final shorebirdCodePush = ShorebirdCodePush();
 
-  void checkForUpdates() async {
+  @override
+  void initState() {
+    onInit();
+    super.initState();
+  }
+
+  Future<void> checkForUpdates() async {
     final isUpdateAvailable =
         await shorebirdCodePush.isNewPatchAvailableForDownload();
     if (isUpdateAvailable) {
@@ -24,10 +30,8 @@ class _HomeState extends State<Home> {
     }
   }
 
-  @override
-  void initState() {
-    checkForUpdates();
-    super.initState();
+  Future<void> onInit() async {
+    await checkForUpdates();
   }
 
   @override
@@ -89,22 +93,19 @@ class _HomeState extends State<Home> {
                 ),
               ),
             ),
-            // InkWell(
-            //   onTap: () {},
-            //   child: Container(
-            //     padding: const EdgeInsets.symmetric(
-            //       horizontal: 12,
-            //       vertical: 6,
-            //     ),
-            //     child: Text(
-            //       "Contactez le développeur",
-            //       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-            //           fontSize: 16,
-            //           fontWeight: FontWeight.bold,
-            //           color: Helper.otherPrimaryColor),
-            //     ),
-            //   ),
-            // ),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 6,
+              ),
+              child: Text(
+                "Hellooo, Lémaa ?",
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Helper.otherPrimaryColor),
+              ),
+            ),
             const SizedBox(height: 20),
             Container(
               padding: const EdgeInsets.all(12),
@@ -120,7 +121,7 @@ class _HomeState extends State<Home> {
                         ),
                       ),
                       child: Text(
-                        "Conducteur",
+                        "Driver",
                         style: Theme.of(context)
                             .textTheme
                             .bodyLarge!
@@ -142,7 +143,7 @@ class _HomeState extends State<Home> {
                         ),
                       ),
                       child: Text(
-                        "Client",
+                        "Customer",
                         style: Theme.of(context)
                             .textTheme
                             .bodyLarge!

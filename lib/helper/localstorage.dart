@@ -1,16 +1,19 @@
-import 'package:localstorage/localstorage.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalStorageManager {
-  final LocalStorage storage = LocalStorage('my_app');
+  static late SharedPreferences localstorage;
+  static init() async {
+    localstorage = await SharedPreferences.getInstance();
+  }
 
   Future<void> saveEnablePermissions(String key, bool value) async {
-    await storage.ready;
-    storage.setItem(key, value);
+    await localstorage.setString(key, value.toString());
   }
 
   Future<bool?> getEnablePermissions(String key) async {
-    await storage.ready;
-    return storage.getItem(key);
+    var isEnabled = localstorage.getString(key) ?? "";
+    return isEnabled.toLowerCase() == "true";
   }
 
   Future<void> savePrices(basePrice, kmPrice) async {
@@ -18,14 +21,17 @@ class LocalStorageManager {
       'basePrice': basePrice,
       'kmPrice': kmPrice,
     };
-    storage.setItem('my_prices', data);
+    var store = json.encode(data);
+    await localstorage.setString('my_prices', store);
   }
 
   Future<void> getPrices() async {
-    final dynamic savedData = storage.getItem('my_data');
-    if (savedData != null) {
-      savedData['basePrice'].toString();
-      savedData['kmPrice'].toString();
+    final dynamic savedData = localstorage.getString('my_prices') ?? "[]";
+    var data = json.decode(savedData);
+    // final dynamic savedData = storage.getItem('my_data');
+    if (data != null) {
+      data['basePrice'].toString();
+      data['kmPrice'].toString();
     }
   }
 }

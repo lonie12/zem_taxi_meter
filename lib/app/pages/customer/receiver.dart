@@ -19,6 +19,7 @@ class _KokomReceiverState extends State<KokomReceiver> {
   Map<String, ConnectionInfo> endpointMap = {};
   var streamConnected = false;
   var streamData = ["0", "0"];
+  var loading = false;
 
   @override
   void initState() {
@@ -86,7 +87,7 @@ class _KokomReceiverState extends State<KokomReceiver> {
                         vertical: 12,
                       ),
                       child: Text(
-                        "Quitter",
+                        "Exit",
                         style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                             fontSize: 16,
                             color: Helper.danger,
@@ -171,30 +172,38 @@ class _KokomReceiverState extends State<KokomReceiver> {
                 ),
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(12),
-              child: ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.resolveWith(
-                      (states) => Helper.warning),
-                  padding: MaterialStateProperty.all(
-                    const EdgeInsets.symmetric(vertical: 11, horizontal: 15),
-                  ),
-                ),
-                onPressed: () async {
-                  await Nearby().stopAllEndpoints();
-                  await Nearby().stopAdvertising();
-                  customStartAdvertising();
-                },
-                child: Text(
-                  "Connecter",
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge!
-                      .copyWith(color: Colors.white, fontSize: 16),
-                ),
-              ),
-            )
+            !streamConnected
+                ? Container(
+                    padding: const EdgeInsets.all(12),
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.resolveWith(
+                            (states) => Helper.warning),
+                        padding: MaterialStateProperty.all(
+                          const EdgeInsets.symmetric(
+                              vertical: 11, horizontal: 15),
+                        ),
+                      ),
+                      onPressed: () async {
+                        await Nearby().stopAllEndpoints();
+                        await Nearby().stopAdvertising();
+                        customStartAdvertising();
+                      },
+                      child: !loading
+                          ? Text(
+                              "Connecter",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(color: Colors.white, fontSize: 16),
+                            )
+                          : const CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                    ),
+                  )
+                : const SizedBox()
           ],
         ),
       ),
@@ -218,6 +227,7 @@ class _KokomReceiverState extends State<KokomReceiver> {
           );
           setState(() {
             endpointMap.remove(id);
+            streamConnected = false;
           });
         },
       );

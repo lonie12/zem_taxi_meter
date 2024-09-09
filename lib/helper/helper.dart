@@ -52,41 +52,11 @@ class Helper {
 
   static String appicon = "assets/images/vooom.png";
 
-  /// Navigation buttom icons
-  static String bactivity = "assets/images/b-activity.svg";
-  static String bhome = "assets/images/b-home.svg";
-  static String bmessages = "assets/images/b-messages.svg";
-  static String buser = "assets/images/b-user.svg";
-  static String bwallet = "assets/images/b-wallet.svg";
-
-  static String bstore = "assets/images/bstore.svg";
-  static String bsearch = "assets/images/bsearch.svg";
-  static String bsearch1 = "assets/images/bsearch1.svg";
-  static String bcart = "assets/images/bcart.svg";
-  static String border = "assets/images/border.svg";
-
-  ///
-
-
-  static String pin = "assets/images/pin.png";
-  static String sos = "assets/images/appsos.png";
-  static String messages = "assets/images/messages.svg";
-  static String whatsapp = "assets/images/whatsapp.svg";
-  static String calling = "assets/images/calling.svg";
-  static String logo = "assets/images/logo.png";
-
   static String onboard0 = "assets/images/position.json";
   static String onboard1 = "assets/images/bluetooth.json";
   static String onboard2 = "assets/images/cast.json";
 
   static String welcome = "assets/images/Yad.svg";
-
-
-
-  static String lottieupgrade = "assets/images/upgrade.json";
-  static String lottielocation = "assets/images/location.json";
-  static String lottiehome = "assets/images/home.json";
-  static String lottienophone = "assets/images/nophone.json";
 
   static String playstoreurl =
       "https://play.google.com/store/search?q=reskode_&c=apps";
@@ -97,7 +67,6 @@ class Helper {
   static String exitwarning = "Appuyer encore une fois pour quitter";
 
   static String apiUrl = "";
-  //  static String apiUrl = "";
   static String officialUrl = "";
   // static String fileManagerUrl = "http://cdn.file-manager.youaps.com/";
 

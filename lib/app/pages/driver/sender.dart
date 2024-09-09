@@ -31,13 +31,14 @@ class KokomSender extends StatefulWidget {
 class _KokomSenderState extends State<KokomSender> {
   final Location location = Location();
   StreamSubscription<LocationData>? locationSubscription;
-  NumberFormat formater = NumberFormat.decimalPattern('fr_FR');
+  NumberFormat formater = NumberFormat("###.0#", "fr_FR");
 
   var startedValue = "not"; //on end ;
   var streamConnected = false;
   List<double> originLocation = [0.0, 0.0];
   var rideDistance = 0.0;
   var rideBalance = 0;
+  var loading = false;
 
   final String userName = Random().nextInt(10000).toString();
   final Strategy strategy = Strategy.P2P_STAR;
@@ -72,7 +73,7 @@ class _KokomSenderState extends State<KokomSender> {
       locationSubscription?.cancel();
     }).listen((LocationData currentLocation) async {
       var currentPosition = await Geo.Geolocator.getCurrentPosition();
-      debugPrint(currentPosition.toString());
+      // debugPrint(currentPosition.toString());
       double distanceInMeters = Geo.Geolocator.distanceBetween(
         originLocation[0],
         originLocation[1],
@@ -82,9 +83,9 @@ class _KokomSenderState extends State<KokomSender> {
 
       // Convertir la distance en kilomètres
       double distanceInKm = distanceInMeters / 1000;
-      rideDistance += distanceInKm;
 
       if (distanceInKm >= 1) {
+        rideDistance += distanceInKm;
         originLocation = [];
         originLocation = [
           currentPosition.latitude,
@@ -110,7 +111,11 @@ class _KokomSenderState extends State<KokomSender> {
   }
 
   Future<void> startCourse() async {
+    setState(() {
+      loading = true;
+    });
     var currentLocation = await Geo.Geolocator.getCurrentPosition();
+    print(currentLocation);
     originLocation = [];
     originLocation = [currentLocation.latitude, currentLocation.longitude];
     rideBalance = widget.baseprice!;
@@ -118,7 +123,9 @@ class _KokomSenderState extends State<KokomSender> {
     Nearby().stopAllEndpoints();
     await customStartDiscovery();
     startedValue = "on";
-    setState(() {});
+    setState(() {
+      loading = false;
+    });
     begin();
   }
 
@@ -152,7 +159,7 @@ class _KokomSenderState extends State<KokomSender> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 12, vertical: 12),
                     child: Text(
-                      "Quitter",
+                      "Exit",
                       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                           fontSize: 16,
                           color: Helper.danger,
@@ -262,7 +269,7 @@ class _KokomSenderState extends State<KokomSender> {
                           : const SizedBox(),
                       startedValue == "end"
                           ? Text(
-                              "$rideDistance km",
+                              "${formater.format(rideDistance).toString()} km",
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyLarge!
@@ -275,7 +282,7 @@ class _KokomSenderState extends State<KokomSender> {
                           : const SizedBox(),
                       startedValue == "not"
                           ? Text(
-                              "Prix de base: ${widget.baseprice} F",
+                              "Base price: ${widget.baseprice} F",
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyLarge!
@@ -288,7 +295,7 @@ class _KokomSenderState extends State<KokomSender> {
                           : const SizedBox(),
                       startedValue == "not"
                           ? Text(
-                              "Prix par Km: ${widget.kmprice} F",
+                              "Price per km: ${widget.kmprice} F",
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyLarge!
@@ -311,7 +318,7 @@ class _KokomSenderState extends State<KokomSender> {
                                 context,
                                 "Bientôt disponible",
                               ),
-                              child: const Text("Modifier"),
+                              child: const Text("Edit price"),
                             )
                           : const SizedBox(),
                     ],
@@ -319,33 +326,54 @@ class _KokomSenderState extends State<KokomSender> {
                 ),
               ),
               startedValue == "not"
-                  ? Container(
-                      width: 80,
-                      height: 80,
-                      margin: const EdgeInsets.symmetric(vertical: 20),
-                      decoration: BoxDecoration(
-                        border: Border.all(width: 5, color: Helper.warning),
-                        borderRadius: BorderRadius.circular(130),
-                      ),
-                      padding: const EdgeInsets.all(2),
-                      child: InkWell(
-                        onTap: () => startCourse(),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Helper.primary,
-                            borderRadius: BorderRadius.circular(100),
-                          ),
-                          child: Center(
-                            child: Text(
-                              "Go",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge!
-                                  .copyWith(fontSize: 22, color: Colors.white),
+                  ? Stack(
+                      children: [
+                        Container(
+                          width: 80,
+                          height: 80,
+                          margin: const EdgeInsets.symmetric(vertical: 20),
+                          decoration: !loading
+                              ? BoxDecoration(
+                                  border: Border.all(
+                                      width: 5, color: Helper.warning),
+                                  borderRadius: BorderRadius.circular(130),
+                                )
+                              : const BoxDecoration(),
+                          padding: const EdgeInsets.all(2),
+                          child: InkWell(
+                            onTap: () => startCourse(),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Helper.primary,
+                                borderRadius: BorderRadius.circular(100),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  "Go",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge!
+                                      .copyWith(
+                                          fontSize: 22, color: Colors.white),
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
+                        loading
+                            ? Positioned(
+                                bottom: 20,
+                                child: SizedBox(
+                                  height: 80,
+                                  width: 80,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 6,
+                                    color: Helper.warning,
+                                  ),
+                                ),
+                              )
+                            : const SizedBox()
+                      ],
                     )
                   : startedValue == "on"
                       ? Container(

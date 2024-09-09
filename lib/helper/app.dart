@@ -1,6 +1,7 @@
 import "package:flutter/services.dart";
 import "package:kokom/helper/helper.dart";
 import "package:kokom/helper/localstorage.dart";
+// import "package:shorebird_code_push/shorebird_code_push.dart";
 
 class App {
   App._();
@@ -15,10 +16,9 @@ class App {
     );
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-    LocalStorageManager localStorageManager = LocalStorageManager();
-    bool? permission =
-        await localStorageManager.getEnablePermissions('permission') ?? false;
-
+    await LocalStorageManager.init();
+    var permission =
+        await LocalStorageManager().getEnablePermissions("permission") ?? false;
     return AppData(permission: permission);
   }
 }
